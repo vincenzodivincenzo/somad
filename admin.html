@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOMAD · Admin</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:BNCE,INFM,wght@-100..100,0..100,300..800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>
+  </defs></svg>
+
+  <!-- LOGIN -->
+  <section class="login" id="login">
+    <div class="login__card sk">
+      <img src="assets/logo.svg" alt="SOMAD" class="login__logo">
+      <h1>Panel SOMAD</h1>
+      <p>Aquí subes viajes, fotos y cambias los textos de la web. Todo lo que guardes se publica solo en 1 o 2 minutos.</p>
+      <label class="field">
+        <span>Clave de acceso</span>
+        <input type="password" id="token" placeholder="Pégala aquí" autocomplete="off">
+      </label>
+      <label class="check"><input type="checkbox" id="remember" checked> Recordar en este dispositivo</label>
+      <button class="btn btn--ink" id="login-btn">Entrar</button>
+      <p class="login__err" id="login-err"></p>
+      <p class="login__help">¿No tienes clave? Pídesela a Vincenzo. No la compartas por redes.</p>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <div class="app" id="app" hidden>
+    <header class="topbar">
+      <img src="assets/wordmark.svg" alt="SOMAD" class="topbar__logo">
+      <span class="topbar__title">Panel</span>
+      <nav class="tabs" id="tabs">
+        <button class="tab is-active" data-tab="trips">Viajes</button>
+        <button class="tab" data-tab="photos">Fotos</button>
+        <button class="tab" data-tab="settings">Textos y contacto</button>
+      </nav>
+      <div class="topbar__right">
+        <a class="btn btn--paper btn--sm" href="./" target="_blank" rel="noopener">Ver web</a>
+        <button class="btn btn--paper btn--sm" id="logout">Salir</button>
+      </div>
+    </header>
+
+    <main class="panel">
+
+      <!-- TRIPS -->
+      <section class="pane is-active" id="pane-trips">
+        <div class="pane__head">
+          <div><h2>Viajes</h2><p>El primero de la lista con fechas futuras sale como “Próximo viaje”. Los que ya pasaron se mueven solos a “Donde ya hemos estado”.</p></div>
+          <button class="btn btn--ink" id="new-trip">+ Nuevo viaje</button>
+        </div>
+        <div class="list" id="trip-list"></div>
+      </section>
+
+      <!-- PHOTOS -->
+      <section class="pane" id="pane-photos">
+        <div class="pane__head">
+          <div><h2>Fotos</h2><p>Las fotos de la sección “Esto es SOMAD”. Las primeras dos salen más grandes. Se reducen solas antes de subir.</p></div>
+          <label class="btn btn--ink file-btn">+ Añadir fotos<input type="file" id="photo-files" accept="image/*" multiple hidden></label>
+        </div>
+        <div class="photo-grid" id="photo-grid"></div>
+        <div class="pane__foot"><button class="btn btn--ink" id="save-gallery" disabled>Guardar cambios de fotos</button></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="pane" id="pane-settings">
+        <div class="pane__head"><div><h2>Textos y contacto</h2><p>Cambia aquí el WhatsApp, el Instagram y las frases principales.</p></div></div>
+        <form class="form" id="settings-form">
+          <label class="field"><span>WhatsApp (solo números, con prefijo de país)</span><input name="whatsapp" placeholder="34661163140" required></label>
+          <label class="field"><span>Usuario de Instagram (sin @)</span><input name="instagram" placeholder="somad.surftrips" required></label>
+          <label class="field"><span>Seguidores (texto corto, p. ej. 1.9k)</span><input name="followers" placeholder="1.9k"></label>
+          <label class="field"><span>Aviso de la barra superior (vacío = se pone solo con el próximo viaje)</span><input name="announcement" placeholder="Últimas plazas para Lanzarote"></label>
+          <label class="field"><span>Frase grande de la portada</span><input name="heroTitle" placeholder="Surf, buena gente y buenos momentos."></label>
+          <label class="field"><span>Texto debajo de la frase</span><textarea name="heroSub" rows="3"></textarea></label>
+          <div class="pane__foot"><button class="btn btn--ink" type="submit">Guardar</button></div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- TRIP DIALOG -->
+  <dialog class="dlg" id="trip-dlg">
+    <form class="form" id="trip-form" method="dialog">
+      <div class="dlg__head"><h2 id="trip-dlg-title">Nuevo viaje</h2><button type="button" class="dlg__close" id="trip-close" aria-label="Cerrar">×</button></div>
+      <input type="hidden" name="id">
+      <div class="grid2">
+        <label class="field"><span>Nombre del viaje *</span><input name="title" placeholder="Lanzarote" required></label>
+        <label class="field"><span>Lugar / spot</span><input name="place" placeholder="Famara"></label>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>País</span>
+          <select name="country">
+            <option>España</option><option>Portugal</option><option>Islas Canarias</option><option>Francia</option><option>Marruecos</option><option value="">Otro</option>
+          </select>
+        </label>
+        <label class="check check--field"><input type="checkbox" name="soon"> Todavía sin fechas (próximamente)</label>
+      </div>
+      <div class="grid2 dates">
+        <label class="field"><span>Empieza</span><input type="date" name="start"></label>
+        <label class="field"><span>Termina</span><input type="date" name="end"></label>
+      </div>
+      <label class="field"><span>Cómo se muestra la fecha (se rellena solo, puedes cambiarlo)</span><input name="dateLabel" placeholder="2 – 4 oct 2026"></label>
+      <label class="field"><span>Descripción corta</span><textarea name="blurb" rows="3" placeholder="Famara y sus 6 km de playa bajo el risco..."></textarea></label>
+      <label class="field"><span>Etiquetas (separadas por comas)</span><input name="tags" placeholder="Semana, Todos los niveles"></label>
+      <label class="field"><span>Foto</span>
+        <div class="photo-pick">
+          <img id="trip-preview" alt="" hidden>
+          <label class="btn btn--paper btn--sm file-btn">Elegir foto<input type="file" id="trip-file" accept="image/*" hidden></label>
+          <input type="hidden" name="image">
+        </div>
+      </label>
+      <div class="dlg__foot">
+        <button type="button" class="btn btn--paper" id="trip-delete" hidden>Borrar viaje</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn--paper" id="trip-cancel">Cancelar</button>
+        <button type="submit" class="btn btn--ink" id="trip-save">Guardar y publicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="busy" id="busy" hidden><div class="busy__card sk"><div class="spinner"></div><p id="busy-text">Publicando…</p></div></div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

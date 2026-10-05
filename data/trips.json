@@ -1,0 +1,80 @@
+[
+  {
+    "id": "proximo",
+    "status": "soon",
+    "title": "Próximo viaje",
+    "place": "Destino por anunciar",
+    "country": "",
+    "start": "",
+    "end": "",
+    "dateLabel": "Invierno 2026 / 27",
+    "blurb": "Estamos cerrando fechas y destino. Apúntate a la lista y te avisamos antes que a nadie.",
+    "image": "assets/img/crew-boards.jpg",
+    "tags": ["Lista de espera"]
+  },
+  {
+    "id": "asturias-oct-2026",
+    "status": "dated",
+    "title": "Asturias",
+    "place": "Costa asturiana",
+    "country": "España",
+    "start": "2026-10-02",
+    "end": "2026-10-04",
+    "dateLabel": "2 – 4 de octubre 2026",
+    "blurb": "Fin de semana largo en el Cantábrico: olas para todos los niveles, sidra y buena gente.",
+    "image": "assets/img/asturias-duo.jpg",
+    "tags": ["Fin de semana", "Todos los niveles"]
+  },
+  {
+    "id": "ericeira-2026",
+    "status": "dated",
+    "title": "Ericeira",
+    "place": "Reserva Mundial de Surf",
+    "country": "Portugal",
+    "start": "2026-07-01",
+    "end": "2026-07-07",
+    "dateLabel": "Verano 2026",
+    "blurb": "La única Reserva Mundial de Surf de Europa. Clases por la mañana, atardeceres en Ribeira d'Ilhas.",
+    "image": "assets/img/ericeira-boards.jpg",
+    "tags": ["Semana", "Clases + alojamiento"]
+  },
+  {
+    "id": "lanzarote-2026",
+    "status": "dated",
+    "title": "Lanzarote",
+    "place": "Famara",
+    "country": "Islas Canarias",
+    "start": "2026-03-01",
+    "end": "2026-03-07",
+    "dateLabel": "Primavera 2026",
+    "blurb": "Famara y sus 6 km de playa bajo el risco. Surf, volcán y cero frío.",
+    "image": "assets/img/surf-lesson.jpg",
+    "tags": ["Semana", "Clima perfecto"]
+  },
+  {
+    "id": "fuerteventura-2025",
+    "status": "dated",
+    "title": "Fuerteventura",
+    "place": "Costa norte",
+    "country": "Islas Canarias",
+    "start": "2025-10-01",
+    "end": "2025-10-07",
+    "dateLabel": "Otoño 2025",
+    "blurb": "Viento, dunas y picos para todos los gustos en la isla más salvaje.",
+    "image": "assets/img/beach-smile.jpg",
+    "tags": ["Semana"]
+  },
+  {
+    "id": "lanzarote-2025",
+    "status": "dated",
+    "title": "Lanzarote",
+    "place": "Famara",
+    "country": "Islas Canarias",
+    "start": "2025-03-01",
+    "end": "2025-03-07",
+    "dateLabel": "Primavera 2025",
+    "blurb": "Donde empezó todo. El primer SOMAD en Canarias.",
+    "image": "assets/img/ericeira-walk.jpg",
+    "tags": ["Semana", "El primero"]
+  }
+]
