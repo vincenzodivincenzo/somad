@@ -7,8 +7,18 @@
     load("data/site.json", { whatsapp: "34661163140", instagram: "somad.surftrips" })
   ]);
 
+  const hasDb = Boolean(CFG.supabaseUrl && CFG.supabaseAnonKey);
+  const dbBase = hasDb ? CFG.supabaseUrl.replace(/\/$/, "") : "";
+  const dbHead = { apikey: CFG.supabaseAnonKey, Authorization: `Bearer ${CFG.supabaseAnonKey}`, "Content-Type": "application/json" };
+  if (hasDb) {
+    try {
+      const r = await fetch(`${dbBase}/rest/v1/rpc/trip_counts`, { method: "POST", headers: dbHead, body: "{}" });
+      if (r.ok) { const taken = Object.fromEntries((await r.json()).map((x) => [x.trip_id, Number(x.taken)])); TRIPS.forEach((t) => { if (t.spots) t.spotsLeft = Math.max(0, t.spots - (taken[t.id] || 0)); }); }
+    } catch (_) { /* sin contador no pasa nada */ }
+  }
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const FLAGS = { "España": "🇪🇸", "Portugal": "🇵🇹", "Islas Canarias": "🇮🇨", "Francia": "🇫🇷", "Marruecos": "🇲🇦" };
+  const DESTINATIONS = ["Asturias", "Ericeira", "Lanzarote", "Fuerteventura"];
 
   /* WhatsApp links */
   const waUrl = (msg) => `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(msg || "Hola SOMAD!")}`;
@@ -28,6 +38,7 @@
   }
   if (CFG.heroSub) set("hero-sub", CFG.heroSub);
   set("year", String(new Date().getFullYear()));
+  if (Array.isArray(CFG.polaroidCaptions)) document.querySelectorAll(".polaroids .pol figcaption").forEach((c, i) => { if (CFG.polaroidCaptions[i]) c.textContent = CFG.polaroidCaptions[i]; });
 
   /* Mobile nav */
   const burger = document.getElementById("burger");
@@ -62,8 +73,13 @@
   const card = (t, i, featured) => {
     const kicker = [t.place, t.country].filter(Boolean).join(" · ");
     const flag = t.flag || FLAGS[t.country] || "🌊";
-    const msg = t.status === "soon" ? "Hola SOMAD! Quiero apuntarme a la lista del próximo viaje 🌊" : `Hola SOMAD! Quiero info del viaje a ${t.title} (${t.dateLabel}) 🏄`;
-    const label = t.cta || (t.status === "soon" ? "Quiero enterarme" : isUpcoming(t) ? "Reservar plaza" : "Quiero uno igual");
+    const interest = t.status === "soon" ? "" : `${t.title} · ${t.dateLabel}`;
+    const bookable = t.status !== "soon" && isUpcoming(t);
+    const soldOut = bookable && t.spots && t.spotsLeft !== undefined && t.spotsLeft <= 0;
+    const label = t.cta || (t.status === "soon" ? "Apuntarme a la lista" : soldOut ? "Lista de espera" : bookable ? "Reservar plaza" : "Avísame del próximo");
+    const action = bookable && !soldOut ? `data-book="${esc(t.id)}"` : `data-list="${esc(interest)}"`;
+    const price = t.price ? `<span class="trip__price">${esc(t.price)} €${t.deposit ? `<small> · señal ${esc(t.deposit)} €</small>` : ""}</span>` : "";
+    const spots = bookable && t.spots ? `<span class="trip__spots">${soldOut ? "Completo" : t.spotsLeft !== undefined ? `${t.spotsLeft} plazas libres` : `${t.spots} plazas`}</span>` : "";
     return `
       <article class="trip ${skin[i % 3]} ${featured ? "trip--featured" : ""}" data-country="${esc(t.country)}">
         <div class="trip__media">${badge(t)}<img src="${esc(t.image)}" alt="${esc(t.title)}" loading="lazy"></div>
@@ -74,14 +90,14 @@
           <p class="trip__blurb">${esc(t.blurb)}</p>
           ${featured ? countdown(t) : ""}
           <div class="trip__tags">${(t.tags || []).map((x) => `<span>${esc(x)}</span>`).join("")}</div>
-          <div class="trip__foot"><a class="btn ${isUpcoming(t) ? "btn--ink" : "btn--paper"} btn--sm" href="${waUrl(msg)}" target="_blank" rel="noopener">${esc(label)}</a></div>
+          <div class="trip__foot"><a class="btn ${isUpcoming(t) ? "btn--ink" : "btn--paper"} btn--sm" ${action}>${esc(label)}</a><span>${price}${price && spots ? "<br>" : ""}${spots}</span></div>
         </div>
       </article>`;
   };
 
   const up = document.getElementById("trips-upcoming");
   const pa = document.getElementById("trips-past");
-  if (up) up.innerHTML = upcoming.length ? upcoming.map((t, i) => card(t, i, i === 0)).join("") : `<p class="empty">Estamos cerrando el próximo destino. Escríbenos y te avisamos.</p>`;
+  if (up) up.innerHTML = upcoming.length ? upcoming.map((t, i) => card(t, i, i === 0)).join("") : `<p class="empty">Estamos cerrando el próximo destino. Apúntate a la lista y te avisamos.</p>`;
   if (pa) pa.innerHTML = past.map((t, i) => card(t, i, false)).join("");
 
   /* Announcement strip */
@@ -114,6 +130,128 @@
   const g = document.getElementById("gallery");
   if (g) g.innerHTML = GALLERY.map((p) => `
     <figure><a href="https://www.instagram.com/${esc(CFG.instagram)}/" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.alt || p.caption || "SOMAD")}" loading="lazy"></a>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+
+  /* ───────── Waiting list (CRM) */
+  const dlg = document.getElementById("list-dlg");
+  const form = document.getElementById("list-form");
+  const okBox = document.getElementById("list-ok");
+  const errBox = document.getElementById("list-err");
+  const interestSel = document.getElementById("list-interest");
+  if (interestSel) {
+    const opts = [];
+    upcoming.filter((t) => t.status !== "soon").forEach((t) => opts.push(`${t.title} · ${t.dateLabel}`));
+    opts.push("El próximo, sea donde sea");
+    DESTINATIONS.forEach((d) => opts.push(d));
+    interestSel.innerHTML = opts.map((o) => `<option>${esc(o)}</option>`).join("");
+    interestSel.value = "El próximo, sea donde sea";
+  }
+
+  let mode = "list", bookTrip = null;
+  const el = (id) => document.getElementById(id);
+  const setMode = (m, trip) => {
+    mode = m; bookTrip = trip || null;
+    const booking = m === "book";
+    el("list-kicker").textContent = booking ? "Reserva" : "Lista de espera";
+    el("list-title").textContent = booking ? `Tu plaza en ${trip.title}` : "Apúntate al próximo SOMAD";
+    el("list-intro").textContent = booking ? "Rellena esto y te confirmamos la plaza. La reserva se cierra con la señal." : "Un minuto. Te escribimos cuando salga el viaje, con fechas y precio. Sin compromiso.";
+    el("book-box").hidden = !booking;
+    el("interest-field").hidden = booking;
+    el("list-submit").textContent = booking ? "Solicitar plaza" : "Apuntarme";
+    form.trip_id.value = booking ? trip.id : "";
+    if (booking) {
+      el("book-trip").textContent = trip.title;
+      el("book-date").textContent = [trip.place, trip.dateLabel].filter(Boolean).join(" · ");
+      el("book-price").innerHTML = trip.price ? `${esc(trip.price)} € / persona${trip.deposit ? `<small>señal ${esc(trip.deposit)} €</small>` : ""}` : `<small>precio por confirmar</small>`;
+    }
+  };
+  const openList = (interest) => {
+    if (!dlg) return;
+    setMode("list");
+    form.hidden = false; okBox.hidden = true; errBox.hidden = true;
+    if (interest && interestSel && [...interestSel.options].some((o) => o.value === interest)) interestSel.value = interest;
+    dlg.showModal();
+    setTimeout(() => form.name.focus(), 50);
+  };
+  const openBook = (tripId) => {
+    const trip = TRIPS.find((t) => t.id === tripId);
+    if (!trip) return openList();
+    setMode("book", trip);
+    form.hidden = false; okBox.hidden = true; errBox.hidden = true;
+    dlg.showModal();
+    setTimeout(() => form.name.focus(), 50);
+  };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-book]");
+    if (b) { e.preventDefault(); openBook(b.dataset.book); return; }
+    const t = e.target.closest("[data-list]");
+    if (t) { e.preventDefault(); openList(t.dataset.list); return; }
+    if (e.target.closest("[data-close]")) dlg.close();
+  });
+  if (dlg) dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+
+  const composeWa = (d) => `Hola SOMAD! ${mode === "book" ? `Quiero reservar plaza en ${bookTrip.title} (${bookTrip.dateLabel}) 🏄` : "Quiero apuntarme a la lista de espera 🌊"}\nNombre: ${d.name}\nNivel: ${d.level}${mode === "book" ? "" : `\nViaje: ${d.interest}`}\nSomos: ${d.people}${d.email ? `\nEmail: ${d.email}` : ""}${d.message ? `\nNota: ${d.message}` : ""}`;
+  const showOk = () => {
+    form.hidden = true; okBox.hidden = false;
+    const booking = mode === "book";
+    el("ok-title").textContent = booking ? "¡Plaza solicitada!" : "¡Estás dentro!";
+    el("ok-text").textContent = booking
+      ? (bookTrip.paymentLink ? `Te la guardamos ${bookTrip.deposit ? `al recibir la señal de ${bookTrip.deposit} €` : "al recibir la señal"}. Puedes pagarla ahora o esperar a que te escribamos.` : "Te escribimos en breve para confirmarla y mandarte cómo pagar la señal.")
+      : "Te escribimos en cuanto salga el próximo viaje. Mientras tanto, síguenos para ver lo que se cuece.";
+    const pay = el("ok-pay");
+    pay.hidden = !(booking && bookTrip.paymentLink);
+    if (!pay.hidden) pay.href = bookTrip.paymentLink;
+  };
+
+  if (form) form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errBox.hidden = true;
+    const f = new FormData(form);
+    const d = {
+      name: (f.get("name") || "").trim(),
+      email: (f.get("email") || "").trim(),
+      phone: (f.get("phone") || "").trim(),
+      level: f.get("level"),
+      interest: f.get("interest"),
+      people: Number(f.get("people")) || 1,
+      message: (f.get("message") || "").trim(),
+      consent: form.consent.checked,
+      source: "web"
+    };
+    if (f.get("website")) { showOk(); return; } // honeypot
+    if (d.name.length < 2) return showErr("Dinos tu nombre.");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return showErr("Ese email no parece correcto.");
+    if (!d.consent) return showErr("Necesitamos tu permiso para guardar los datos.");
+    if (!hasDb) {
+      window.open(waUrl(composeWa(d)), "_blank", "noopener");
+      showOk();
+      return;
+    }
+    let table = "leads", payload = d;
+    if (mode === "book") {
+      table = "bookings";
+      const { interest, source, ...rest } = d;
+      payload = { ...rest, trip_id: bookTrip.id, trip_title: bookTrip.title, trip_date: bookTrip.dateLabel || null };
+    }
+    const btn = document.getElementById("list-submit");
+    btn.disabled = true; btn.textContent = "Enviando…";
+    try {
+      const r = await fetch(`${dbBase}/rest/v1/${table}`, {
+        method: "POST",
+        headers: { ...dbHead, Prefer: "return=minimal" },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const keepMode = mode, keepTrip = bookTrip;
+      form.reset(); if (interestSel) interestSel.value = "El próximo, sea donde sea";
+      mode = keepMode; bookTrip = keepTrip;
+      showOk();
+    } catch (err) {
+      console.error(err);
+      showErr("No hemos podido guardarlo. Prueba otra vez o escríbenos por WhatsApp.");
+    }
+    btn.disabled = false; btn.textContent = mode === "book" ? "Solicitar plaza" : "Apuntarme";
+  });
+  function showErr(m) { errBox.textContent = m; errBox.hidden = false; }
 
   /* Reveal on scroll */
   document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure").forEach((el) => el.classList.add("reveal"));

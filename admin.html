@@ -28,8 +28,12 @@
       <h1>Panel SOMAD</h1>
       <p>Aquí subes viajes, fotos y cambias los textos de la web. Todo lo que guardes se publica solo en 1 o 2 minutos.</p>
       <label class="field">
-        <span>Clave de acceso</span>
+        <span>Clave de publicación</span>
         <input type="password" id="token" placeholder="Pégala aquí" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>Clave de lista de espera <small>(opcional, para ver el CRM)</small></span>
+        <input type="password" id="crm-key" placeholder="Pégala aquí" autocomplete="off">
       </label>
       <label class="check"><input type="checkbox" id="remember" checked> Recordar en este dispositivo</label>
       <button class="btn btn--ink" id="login-btn">Entrar</button>
@@ -44,7 +48,9 @@
       <img src="assets/wordmark.svg" alt="SOMAD" class="topbar__logo">
       <span class="topbar__title">Panel</span>
       <nav class="tabs" id="tabs">
-        <button class="tab is-active" data-tab="trips">Viajes</button>
+        <button class="tab is-active" data-tab="leads">Lista de espera <span class="count" id="leads-count" hidden></span></button>
+        <button class="tab" data-tab="bookings">Reservas <span class="count" id="bookings-count" hidden></span></button>
+        <button class="tab" data-tab="trips">Viajes</button>
         <button class="tab" data-tab="photos">Fotos</button>
         <button class="tab" data-tab="settings">Textos y contacto</button>
       </nav>
@@ -56,8 +62,70 @@
 
     <main class="panel">
 
+      <!-- LEADS / CRM -->
+      <section class="pane is-active" id="pane-leads">
+        <div class="pane__head">
+          <div><h2>Lista de espera</h2><p>Todo el que se apunta en la web aparece aquí. Cámbiale el estado cuando le escribas, apunta notas y exporta cuando quieras.</p></div>
+          <div class="pane__actions">
+            <button class="btn btn--paper btn--sm" id="leads-refresh">Actualizar</button>
+            <button class="btn btn--paper btn--sm" id="leads-export">Exportar CSV</button>
+          </div>
+        </div>
+        <div id="leads-setup" class="setup sk" hidden>
+          <h3>Falta conectar la base de datos</h3>
+          <p id="leads-setup-text"></p>
+          <ol>
+            <li>Crea un proyecto gratis en <b>supabase.com</b>.</li>
+            <li>SQL Editor → pega <code>supabase/schema.sql</code> del repo (cambiando la clave) → Run.</li>
+            <li>Project Settings → API: copia la <b>URL</b> y la <b>anon key</b> y pégalas en “Textos y contacto”.</li>
+            <li>Vuelve a entrar en el panel con la clave de lista de espera.</li>
+          </ol>
+          <p>Mientras tanto, el botón de la web manda la solicitud por WhatsApp.</p>
+        </div>
+        <div id="leads-ui" hidden>
+          <div class="stats" id="leads-stats"></div>
+          <div class="toolbar">
+            <div class="filters" id="leads-filters">
+              <button class="filter is-active" data-status="all">Todos</button>
+              <button class="filter" data-status="nuevo">Nuevos</button>
+              <button class="filter" data-status="contactado">Contactados</button>
+              <button class="filter" data-status="reservado">Reservados</button>
+              <button class="filter" data-status="descartado">Descartados</button>
+            </div>
+            <input class="search" id="leads-search" placeholder="Buscar nombre, email, viaje…">
+          </div>
+          <div class="leads" id="leads-list"></div>
+        </div>
+      </section>
+
+      <!-- BOOKINGS -->
+      <section class="pane" id="pane-bookings">
+        <div class="pane__head">
+          <div><h2>Reservas</h2><p>Solicitudes de plaza en viajes con fecha. Confirma cuando llegue la señal; las plazas libres se calculan solas.</p></div>
+          <div class="pane__actions">
+            <button class="btn btn--paper btn--sm" id="bookings-refresh">Actualizar</button>
+            <button class="btn btn--paper btn--sm" id="bookings-export">Exportar CSV</button>
+          </div>
+        </div>
+        <div id="bookings-setup" class="setup sk" hidden><h3>Falta conectar la base de datos</h3><p>Igual que la lista de espera: configura Supabase en “Textos y contacto” y entra con la clave de lista de espera.</p></div>
+        <div id="bookings-ui" hidden>
+          <div class="stats" id="bookings-stats"></div>
+          <div class="toolbar">
+            <div class="filters" id="bookings-filters">
+              <button class="filter is-active" data-status="all">Todas</button>
+              <button class="filter" data-status="solicitada">Solicitadas</button>
+              <button class="filter" data-status="confirmada">Confirmadas</button>
+              <button class="filter" data-status="pagada">Pagadas</button>
+              <button class="filter" data-status="cancelada">Canceladas</button>
+            </div>
+            <select class="search" id="bookings-trip"><option value="all">Todos los viajes</option></select>
+          </div>
+          <div class="leads" id="bookings-list"></div>
+        </div>
+      </section>
+
       <!-- TRIPS -->
-      <section class="pane is-active" id="pane-trips">
+      <section class="pane" id="pane-trips">
         <div class="pane__head">
           <div><h2>Viajes</h2><p>El primero de la lista con fechas futuras sale como “Próximo viaje”. Los que ya pasaron se mueven solos a “Donde ya hemos estado”.</p></div>
           <button class="btn btn--ink" id="new-trip">+ Nuevo viaje</button>
@@ -85,6 +153,10 @@
           <label class="field"><span>Aviso de la barra superior (vacío = se pone solo con el próximo viaje)</span><input name="announcement" placeholder="Últimas plazas para Lanzarote"></label>
           <label class="field"><span>Frase grande de la portada</span><input name="heroTitle" placeholder="Surf, buena gente y buenos momentos."></label>
           <label class="field"><span>Texto debajo de la frase</span><textarea name="heroSub" rows="3"></textarea></label>
+          <label class="field"><span>Pies de las 3 fotos polaroid de la portada (separados por comas)</span><input name="polaroidCaptions" placeholder="Asturias ✌️, Lanzarote 🇮🇨, Ericeira 🇵🇹"></label>
+          <h3 class="form__sub">Base de datos de la lista de espera (Supabase)</h3>
+          <label class="field"><span>URL del proyecto</span><input name="supabaseUrl" placeholder="https://xxxx.supabase.co"></label>
+          <label class="field"><span>Anon key (es pública, no pasa nada por ponerla aquí)</span><input name="supabaseAnonKey" placeholder="eyJ…"></label>
           <div class="pane__foot"><button class="btn btn--ink" type="submit">Guardar</button></div>
         </form>
       </section>
@@ -115,6 +187,14 @@
       <label class="field"><span>Cómo se muestra la fecha (se rellena solo, puedes cambiarlo)</span><input name="dateLabel" placeholder="2 – 4 oct 2026"></label>
       <label class="field"><span>Descripción corta</span><textarea name="blurb" rows="3" placeholder="Famara y sus 6 km de playa bajo el risco..."></textarea></label>
       <label class="field"><span>Etiquetas (separadas por comas)</span><input name="tags" placeholder="Semana, Todos los niveles"></label>
+      <div class="grid2">
+        <label class="field"><span>Precio por persona (€)</span><input name="price" type="number" min="0" step="1" placeholder="450"></label>
+        <label class="field"><span>Señal (€)</span><input name="deposit" type="number" min="0" step="1" placeholder="150"></label>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>Plazas totales</span><input name="spots" type="number" min="0" step="1" placeholder="12"></label>
+        <label class="field"><span>Enlace de pago de la señal (Stripe, Bizum, lo que uséis)</span><input name="paymentLink" type="url" placeholder="https://…"></label>
+      </div>
       <label class="field"><span>Foto</span>
         <div class="photo-pick">
           <img id="trip-preview" alt="" hidden>
@@ -127,6 +207,44 @@
         <span class="spacer"></span>
         <button type="button" class="btn btn--paper" id="trip-cancel">Cancelar</button>
         <button type="submit" class="btn btn--ink" id="trip-save">Guardar y publicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- LEAD DIALOG -->
+  <dialog class="dlg" id="lead-dlg">
+    <form class="form" id="lead-form" method="dialog">
+      <div class="dlg__head"><h2 id="lead-name">Nombre</h2><button type="button" class="dlg__close" id="lead-close" aria-label="Cerrar">×</button></div>
+      <div class="lead__facts" id="lead-facts"></div>
+      <div class="lead__quick" id="lead-quick"></div>
+      <label class="field"><span>Estado</span>
+        <select name="status"><option value="nuevo">Nuevo</option><option value="contactado">Contactado</option><option value="reservado">Reservado</option><option value="descartado">Descartado</option></select>
+      </label>
+      <label class="field"><span>Notas internas</span><textarea name="notes" rows="4" placeholder="Qué le dijiste, qué quiere, cuándo volver a escribir…"></textarea></label>
+      <div class="dlg__foot">
+        <button type="button" class="btn btn--paper" id="lead-delete">Borrar</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn--paper" id="lead-cancel">Cancelar</button>
+        <button type="submit" class="btn btn--ink">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- BOOKING DIALOG -->
+  <dialog class="dlg" id="booking-dlg">
+    <form class="form" id="booking-form" method="dialog">
+      <div class="dlg__head"><h2 id="booking-name">Nombre</h2><button type="button" class="dlg__close" id="booking-close" aria-label="Cerrar">×</button></div>
+      <div class="lead__facts" id="booking-facts"></div>
+      <div class="lead__quick" id="booking-quick"></div>
+      <label class="field"><span>Estado</span>
+        <select name="status"><option value="solicitada">Solicitada</option><option value="confirmada">Confirmada (señal recibida)</option><option value="pagada">Pagada del todo</option><option value="cancelada">Cancelada</option></select>
+      </label>
+      <label class="field"><span>Notas internas</span><textarea name="notes" rows="4" placeholder="Pago, alergias, vuelo, habitación…"></textarea></label>
+      <div class="dlg__foot">
+        <button type="button" class="btn btn--paper" id="booking-delete">Borrar</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn--paper" id="booking-cancel">Cancelar</button>
+        <button type="submit" class="btn btn--ink">Guardar</button>
       </div>
     </form>
   </dialog>

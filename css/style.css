@@ -18,6 +18,7 @@
   --sk3:225px 25px 245px 20px / 20px 245px 25px 225px;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:84px}
 html{overflow-x:clip}
 body{margin:0;font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -269,3 +270,39 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
   .container,.hero__inner,.nav__inner,.strip__inner{width:min(var(--max),100% - 32px)}
   .hero{min-height:80vh}
 }
+
+/* ───────── lista de espera (modal + form) */
+.dlg{border:var(--line) solid var(--ink);border-radius:var(--sk3);background:var(--paper);color:var(--ink);padding:28px;width:min(640px,calc(100% - 32px));max-height:calc(100vh - 32px);overflow:auto}
+.dlg::backdrop{background:rgba(18,18,18,.6)}
+.dlg__head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dlg__head h2{font-size:clamp(1.5rem,3vw,2rem)}
+.dlg__close{border:0;background:transparent;font-size:2.2rem;line-height:1;cursor:pointer;color:var(--ink);padding:0 4px}
+.dlg__foot{display:flex;gap:12px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.spacer{flex:1}
+.form{display:flex;flex-direction:column;gap:14px}
+.form__intro{color:var(--ink-2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field span{font-weight:800;font-size:.85rem}
+.field input,.field textarea,.field select{font:inherit;padding:11px 14px;border:2px solid var(--ink);border-radius:var(--sk2);background:#fff;color:var(--ink);width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid rgba(18,18,18,.18);outline-offset:1px}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:.9rem;color:var(--ink-2);line-height:1.45}
+.check input{width:18px;height:18px;accent-color:var(--ink);flex:none;margin-top:2px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.form__err{color:#b00020;font-weight:700}
+.form__alt{font-size:.95rem}
+.form__ok{text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 0}
+.form__ok-star{width:56px;height:56px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.form__ok .hero__actions{justify-content:center}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}}
+.btn[disabled]{opacity:.5;pointer-events:none}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}.dlg{padding:22px 18px}}
+.book-box{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;background:#fff;flex-wrap:wrap}
+.book-box__label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.book-box b{font-family:var(--display);font-size:1.25rem;display:block;line-height:1.1}
+.book-box > div > span:last-child{font-weight:700;color:var(--ink-2)}
+#book-price{text-align:right;font-weight:800}
+#book-price small{display:block;font-weight:600;color:var(--muted)}
+.trip__price{font-weight:800;font-size:.95rem}
+.trip__price small{font-weight:600;color:var(--muted)}
+.trip__spots{font-size:.8rem;font-weight:800;color:var(--ink-2)}

@@ -36,7 +36,7 @@
     <div class="strip__inner">
       <svg class="star"><use href="#star"/></svg>
       <span class="strip__text" id="strip-text">Próximo viaje: destino en camino</span>
-      <a class="strip__link" data-wa="Hola SOMAD! Quiero apuntarme a la lista del próximo viaje 🌊">Avísame</a>
+      <a class="strip__link" data-list="">Apúntate a la lista</a>
       <svg class="star"><use href="#star"/></svg>
     </div>
   </div>
@@ -50,13 +50,13 @@
         <a href="#como">Cómo funciona</a>
         <a href="#comunidad">Comunidad</a>
         <a href="#faq">FAQ</a>
-        <a class="btn btn--ink btn--sm nav__cta-mobile" data-wa="Hola SOMAD! Quiero info del próximo viaje 🏄">WhatsApp</a>
+        <a class="btn btn--ink btn--sm nav__cta-mobile" data-list="">Lista de espera</a>
       </nav>
       <div class="nav__right">
         <a class="nav__ig" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
         </a>
-        <a class="btn btn--ink btn--sm nav__cta" data-wa="Hola SOMAD! Quiero info del próximo viaje 🏄">Escríbenos</a>
+        <a class="btn btn--ink btn--sm nav__cta" data-list="">Lista de espera</a>
         <button class="burger" id="burger" aria-label="Menú" aria-expanded="false"><span></span><span></span></button>
       </div>
     </div>
@@ -70,8 +70,8 @@
         <img class="hero__logo" src="assets/logo.svg" alt="SOMAD surftrips" width="720" height="300">
         <p class="hero__tag" id="hero-tag">Experiencias. Comunidad. Viajes.<br>Surfing y buenos momentos.</p>
         <div class="hero__actions">
-          <a class="btn btn--paper" href="#viajes">Ver viajes</a>
-          <a class="btn btn--light" data-wa="Hola SOMAD! Quiero info sobre los viajes 🌊">WhatsApp</a>
+          <a class="btn btn--paper" data-list="">Apuntarme a la lista</a>
+          <a class="btn btn--light" href="#viajes">Ver viajes</a>
         </div>
       </div>
       <svg class="hero__scroll" width="22" height="34" viewBox="0 0 22 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M11 3v24M4 21l7 8 7-8"/></svg>
@@ -184,8 +184,8 @@
           </div>
         </div>
         <ol class="steps">
-          <li class="step sk"><span class="step__num">1</span><h3>Escríbenos</h3><p>Un WhatsApp y te contamos fechas, precio y qué incluye el próximo viaje. Sin compromiso.</p></li>
-          <li class="step sk sk--2"><span class="step__num">2</span><h3>Reserva tu plaza</h3><p>Grupos pequeños, plazas limitadas. Reservas con una señal y el resto antes de salir.</p></li>
+          <li class="step sk"><span class="step__num">1</span><h3>Apúntate</h3><p>Déjanos tu nombre y tu nivel en la lista de espera. Un minuto, sin compromiso.</p></li>
+          <li class="step sk sk--2"><span class="step__num">2</span><h3>Te escribimos</h3><p>Cuando salga el próximo viaje te contamos fechas, precio y qué incluye. Grupos pequeños: reservas con una señal.</p></li>
           <li class="step sk sk--3"><span class="step__num">3</span><h3>Vuela y surfea</h3><p>Te ayudamos con los vuelos y nos vemos en destino. Del resto nos ocupamos nosotros.</p></li>
           <li class="step sk"><span class="step__num">4</span><h3>Vuelve con familia</h3><p>Lo que pasa en SOMAD se queda en el grupo de WhatsApp. Para siempre.</p></li>
         </ol>
@@ -193,7 +193,7 @@
         <div class="includes">
           <div class="includes__copy">
             <h3>Qué suele incluir un viaje SOMAD</h3>
-            <p>Cada destino es distinto, pero la receta es la misma. Consulta el detalle de cada viaje por WhatsApp.</p>
+            <p>Cada destino es distinto, pero la receta es la misma. El detalle de cada viaje te llega cuando estás en la lista.</p>
           </div>
           <ul class="includes__list">
             <li><svg class="star"><use href="#star"/></svg><b>Alojamiento</b> en surf house o apartamentos en grupo</li>
@@ -239,7 +239,7 @@
           <details class="sk sk--3"><summary>¿Qué edad tiene la gente?</summary><p>Normalmente entre 23 y 40 años, con muchas ganas de surf y de pasarlo bien. Lo importante es la actitud.</p></details>
           <details class="sk"><summary>¿Qué tengo que llevar?</summary><p>Bañador, crema solar, ropa cómoda y ganas. El neopreno, la tabla y la licra los ponemos nosotros. Te mandamos una lista completa antes del viaje.</p></details>
           <details class="sk sk--2"><summary>¿Están incluidos los vuelos?</summary><p>No, cada uno reserva su vuelo para tener flexibilidad. Te decimos qué vuelos coge el grupo para que podáis ir juntos.</p></details>
-          <details class="sk sk--3"><summary>¿Cómo reservo?</summary><p>Escríbenos por WhatsApp o Instagram. Te mandamos toda la info y, si te cuadra, reservas tu plaza con una señal.</p></details>
+          <details class="sk sk--3"><summary>¿Cómo reservo?</summary><p>Apúntate a la lista de espera con el botón de arriba. Cuando abramos plazas te escribimos con toda la info y, si te cuadra, reservas con una señal. Si tienes prisa, WhatsApp e Instagram siguen ahí.</p></details>
         </div>
       </div>
     </section>
@@ -248,9 +248,10 @@
       <div class="cta__bg"></div>
       <div class="container cta__inner">
         <h2>¿Te vienes al próximo?</h2>
-        <p>Cuéntanos tu nivel y cuándo te viene bien. Te respondemos rápido.</p>
+        <p>Apúntate a la lista de espera y te avisamos antes que a nadie. Sin spam, solo olas.</p>
         <div class="hero__actions">
-          <a class="btn btn--paper btn--lg" data-wa="Hola SOMAD! Quiero venirme al próximo viaje 🏄‍♀️">Escríbenos por WhatsApp</a>
+          <a class="btn btn--paper btn--lg" data-list="">Apuntarme a la lista</a>
+          <a class="btn btn--light btn--lg" data-wa="Hola SOMAD! 👋">WhatsApp</a>
           <a class="btn btn--light btn--lg" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
         </div>
       </div>
@@ -277,6 +278,7 @@
       </div>
       <div class="footer__col">
         <h4>Contacto</h4>
+        <a data-list="">Lista de espera</a>
         <a data-wa="Hola SOMAD! 👋">WhatsApp</a>
         <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
       </div>
@@ -290,6 +292,56 @@
   <a class="wa-float" data-wa="Hola SOMAD! 👋" aria-label="WhatsApp">
     <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M16 3C9 3 3.3 8.7 3.3 15.7c0 2.5.7 4.9 2 7L3 29l6.5-2.1c2 1.1 4.2 1.7 6.5 1.7 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.2c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.3-3.7-.3-.4a10.3 10.3 0 1 1 9 5zm5.7-7.6c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.4 8.4 0 0 1-4.2-3.7c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.1 1.1-1.1 2.7 1.1 3.1 1.3 3.3c.2.2 2.2 3.4 5.4 4.8 2 .9 2.8.9 3.8.8.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5l-.7-.3z"/></svg>
   </a>
+
+  <!-- Lista de espera -->
+  <dialog class="dlg" id="list-dlg" aria-labelledby="list-title">
+    <form class="form" id="list-form" novalidate>
+      <div class="dlg__head">
+        <div><p class="eyebrow"><svg class="star"><use href="#star"/></svg> <span id="list-kicker">Lista de espera</span></p><h2 id="list-title">Apúntate al próximo SOMAD</h2></div>
+        <button type="button" class="dlg__close" data-close aria-label="Cerrar">×</button>
+      </div>
+      <p class="form__intro" id="list-intro">Un minuto. Te escribimos cuando salga el viaje, con fechas y precio. Sin compromiso.</p>
+      <div class="book-box sk sk--2" id="book-box" hidden>
+        <div><span class="book-box__label">Viaje</span><b id="book-trip"></b><span id="book-date"></span></div>
+        <div id="book-price"></div>
+      </div>
+      <input type="hidden" name="trip_id">
+      <div class="grid2">
+        <label class="field"><span>Nombre *</span><input name="name" required autocomplete="name" placeholder="Tu nombre"></label>
+        <label class="field"><span>WhatsApp</span><input name="phone" type="tel" autocomplete="tel" placeholder="+34 600 000 000"></label>
+      </div>
+      <label class="field"><span>Email *</span><input name="email" type="email" required autocomplete="email" placeholder="tu@email.com"></label>
+      <div class="grid2">
+        <label class="field"><span>Tu nivel</span>
+          <select name="level"><option value="nunca">Nunca he surfeado</option><option value="principiante">Principiante</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option></select>
+        </label>
+        <label class="field" id="interest-field"><span>¿Qué viaje te interesa?</span><select name="interest" id="list-interest"></select></label>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>¿Cuántos sois?</span><select name="people"><option value="1">Voy solo/a</option><option value="2">2</option><option value="3">3</option><option value="4">4 o más</option></select></label>
+        <label class="field"><span>Algo que debamos saber</span><input name="message" placeholder="Fechas, dudas, lo que sea"></label>
+      </div>
+      <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="check"><input type="checkbox" name="consent" required> Vale que SOMAD guarde mis datos para avisarme de sus viajes. Nada de spam, y me borráis cuando quiera.</label>
+      <p class="form__err" id="list-err" hidden></p>
+      <div class="dlg__foot">
+        <a class="link-u form__alt" data-wa="Hola SOMAD! Quiero apuntarme a la lista del próximo viaje 🌊">Prefiero WhatsApp</a>
+        <span class="spacer"></span>
+        <button type="submit" class="btn btn--ink" id="list-submit">Apuntarme</button>
+      </div>
+    </form>
+    <div class="form__ok" id="list-ok" hidden>
+      <svg class="star form__ok-star"><use href="#star"/></svg>
+      <h2 id="ok-title">¡Estás dentro!</h2>
+      <p id="ok-text">Te escribimos en cuanto salga el próximo viaje. Mientras tanto, síguenos para ver lo que se cuece.</p>
+      <a class="btn btn--ink" id="ok-pay" href="#" target="_blank" rel="noopener" hidden>Pagar la señal</a>
+      <div class="hero__actions">
+        <a class="btn btn--ink" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
+        <a class="btn btn--paper" data-wa="Hola SOMAD! Acabo de apuntarme a la lista 🌊">Escribirnos por WhatsApp</a>
+        <button type="button" class="btn btn--paper" data-close>Cerrar</button>
+      </div>
+    </div>
+  </dialog>
 
   <script src="js/main.js"></script>
 </body>
