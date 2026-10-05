@@ -144,10 +144,32 @@
     });
   });
 
-  /* Gallery */
+  /* Gallery: one horizontal strip per place, each photo links to its Instagram post */
   const g = document.getElementById("gallery");
-  if (g) g.innerHTML = GALLERY.map((p) => `
-    <figure><a href="https://www.instagram.com/${esc(CFG.instagram)}/" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.alt || p.caption || "SOMAD")}" loading="lazy"></a>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+  if (g) {
+    const ORDER = ["Asturias", "Ericeira", "Lanzarote", "Fuerteventura"];
+    const FLAG = { Asturias: "🇪🇸", Ericeira: "🇵🇹", Lanzarote: "🇮🇨", Fuerteventura: "🇮🇨" };
+    const groups = new Map();
+    GALLERY.forEach((p) => { const k = p.place || "Más"; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(p); });
+    const keys = [...groups.keys()].sort((a, b) => (ORDER.indexOf(a) + 1 || 99) - (ORDER.indexOf(b) + 1 || 99));
+    const igProfile = `https://www.instagram.com/${esc(CFG.instagram)}/`;
+    g.innerHTML = keys.map((k, i) => {
+      const items = groups.get(k);
+      const cards = items.map((p) => `
+        <figure class="pol" data-href="${esc(p.href || igProfile)}"><img src="${esc(p.src)}" alt="${esc(p.alt || p.caption || k)}" loading="lazy"><figcaption>${esc(p.caption || k)}</figcaption><svg class="ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></figure>`).join("");
+      return `<div class="strip-row ${items.length >= 4 ? "strip-row--more" : ""}">
+        <div class="strip-row__head"><h3 class="strip-row__title"><span class="flag">${FLAG[k] || "🌊"}</span>${esc(k)} <span class="strip-row__count">${items.length} fotos</span></h3>
+          <div class="strip-row__nav"><button aria-label="Anterior" data-dir="-1">←</button><button aria-label="Siguiente" data-dir="1">→</button></div></div>
+        <div class="strip" id="strip-${i}">${cards}${items.length >= 4 ? `<figure class="pol" data-href="${igProfile}">Ver más<br>en Instagram →</figure>` : ""}</div>
+      </div>`;
+    }).join("");
+    g.addEventListener("click", (e) => {
+      const nav = e.target.closest("[data-dir]");
+      if (nav) { const strip = nav.closest(".strip-row").querySelector(".strip"); strip.scrollBy({ left: Number(nav.dataset.dir) * strip.clientWidth * 0.8, behavior: "smooth" }); return; }
+      const card = e.target.closest(".pol[data-href]");
+      if (card) window.open(card.dataset.href, "_blank", "noopener");
+    });
+  }
 
   /* ───────── Calendar: one month at a time */
   const cal = document.getElementById("calendar");
@@ -333,7 +355,7 @@
   function showErr(m) { errBox.textContent = m; errBox.hidden = false; }
 
   /* Reveal on scroll */
-  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure").forEach((el) => el.classList.add("reveal"));
+  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.perk,.strip-row").forEach((el) => el.classList.add("reveal"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
   }, { threshold: 0.1 });

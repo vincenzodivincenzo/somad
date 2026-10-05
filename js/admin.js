@@ -201,10 +201,13 @@
   });
 
   /* ───── gallery */
+  const PLACES = ["Asturias", "Ericeira", "Lanzarote", "Fuerteventura", "Otro"];
   function renderGallery() {
     $("#photo-grid").innerHTML = gallery.map((p, i) => `<div class="photo" data-i="${i}">
       <img src="${esc(p.src)}" alt="">
+      <select data-place>${PLACES.map((pl) => `<option ${((p.place || "Otro") === pl) ? "selected" : ""}>${pl}</option>`).join("")}</select>
       <input value="${esc(p.caption || "")}" placeholder="Pie de foto (opcional)" data-cap>
+      <input value="${esc(p.href || "")}" placeholder="Enlace al post de Instagram (opcional)" data-href>
       <div class="photo__actions">
         <span><button class="icon-btn" data-act="left" ${i === 0 ? "disabled" : ""}>←</button> <button class="icon-btn" data-act="right" ${i === gallery.length - 1 ? "disabled" : ""}>→</button></span>
         <button class="icon-btn" data-act="del" title="Quitar">✕</button>
@@ -212,7 +215,14 @@
     $("#save-gallery").disabled = !galleryDirty;
   }
   const markDirty = () => { galleryDirty = true; $("#save-gallery").disabled = false; };
-  $("#photo-grid").addEventListener("input", (e) => { if (e.target.matches("[data-cap]")) { gallery[+e.target.closest(".photo").dataset.i].caption = e.target.value; markDirty(); } });
+  $("#photo-grid").addEventListener("input", (e) => {
+    const i = +e.target.closest(".photo").dataset.i;
+    if (e.target.matches("[data-cap]")) gallery[i].caption = e.target.value;
+    else if (e.target.matches("[data-href]")) gallery[i].href = e.target.value.trim();
+    else if (e.target.matches("[data-place]")) gallery[i].place = e.target.value === "Otro" ? "" : e.target.value;
+    else return;
+    markDirty();
+  });
   $("#photo-grid").addEventListener("click", (e) => {
     const b = e.target.closest("[data-act]"); if (!b) return;
     const i = +b.closest(".photo").dataset.i;
@@ -225,7 +235,7 @@
     if (!files.length) return;
     await publish(async () => {
       let n = 0;
-      for (const f of files) { busy(true, `Subiendo foto ${++n} de ${files.length}…`); gallery.push({ src: await uploadImage(f, f.name.replace(/\.[^.]+$/, "")), alt: "SOMAD", caption: "" }); }
+      for (const f of files) { busy(true, `Subiendo foto ${++n} de ${files.length}…`); gallery.push({ src: await uploadImage(f, f.name.replace(/\.[^.]+$/, "")), alt: "SOMAD", caption: "", place: "", href: "" }); }
       busy(true, "Publicando…");
       await putJson("data/gallery.json", gallery);
       galleryDirty = false; renderGallery();
