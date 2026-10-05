@@ -104,11 +104,12 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
 @keyframes bob{50%{transform:translate(-50%,6px)}}
 
 /* ───────── marquee */
-.marquee{background:var(--paper);color:var(--ink);overflow:hidden;padding:12px 0;border-bottom:var(--line) solid var(--ink);position:relative;z-index:1}
-.marquee__track{display:flex;gap:40px;width:max-content;animation:marquee 30s linear infinite;font-family:var(--display);font-weight:800;font-size:1.1rem;font-variation-settings:"BNCE" 40,"INFM" 70;align-items:center;white-space:nowrap;will-change:transform;backface-visibility:hidden}
+.marquee{background:var(--paper);color:var(--ink);overflow:hidden;padding:12px 0;border-bottom:var(--line) solid var(--ink);position:relative;white-space:nowrap;line-height:1.2}
+.marquee__track{display:inline-flex;gap:40px;align-items:center;font-family:var(--display);font-weight:800;font-size:1.1rem;font-variation-settings:"BNCE" 40,"INFM" 70;white-space:nowrap;animation:marquee 30s linear infinite;-webkit-animation:marquee 30s linear infinite}
 .marquee__track span{display:inline-flex;align-items:center;gap:40px;flex:none;white-space:nowrap}
-.marquee__track .star{width:18px;height:18px;color:var(--sun)}
-@keyframes marquee{to{transform:translateX(-50%)}}
+.marquee__track .star{width:18px;height:18px;color:var(--sun);flex:none}
+@keyframes marquee{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@-webkit-keyframes marquee{from{-webkit-transform:translate3d(0,0,0)}to{-webkit-transform:translate3d(-50%,0,0)}}
 
 /* ───────── intro statement */
 .intro{padding:clamp(56px,8vw,100px) 0 clamp(30px,4vw,50px)}
@@ -128,8 +129,8 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
 .pol:hover img{filter:none}
 .pol figcaption{position:absolute;bottom:8px;left:12px;font-family:var(--display);font-size:.95rem;font-variation-settings:"BNCE" 50,"INFM" 90}
 .pol--1{left:0;top:4%;--r:-6deg;z-index:1}
-.pol--2{right:0;top:0;--r:4deg;z-index:2;width:50%}
-.pol--3{left:26%;bottom:0;--r:-2deg;z-index:3;width:52%}
+.pol--2{right:0;top:0;--r:4deg;z-index:3;width:50%}
+.pol--3{left:26%;bottom:0;--r:-2deg;z-index:2;width:52%}
 .tape{position:absolute;top:-10px;left:50%;width:84px;height:24px;background:rgba(240,240,230,.75);transform:translateX(-50%) rotate(-3deg);border:1px dashed rgba(0,0,0,.15)}
 
 /* ───────── sections */
