@@ -2,7 +2,7 @@ import { cors, json } from "../lib/http.js";
 import { readContent } from "../lib/content.js";
 
 export default async function handler(req, res) {
-  if (cors(req, res)) return;
+  if (cors(req, res, { open: true })) return;
   if (req.method !== "GET") return json(res, 405, { error: "method" });
   try {
     const data = await readContent();
