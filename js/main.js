@@ -1,6 +1,6 @@
 (async function () {
   /* API lives on Vercel; the static copy on GitHub Pages calls it cross-origin */
-  const API = location.hostname.endsWith("github.io") ? "https://somad-surftrips.vercel.app" : "";
+  const API = location.hostname.endsWith("github.io") ? "https://somad-nu.vercel.app" : "";
   const noCache = { cache: "no-store" };
   const load = (p, fallback) => fetch(p, noCache).then((r) => (r.ok ? r.json() : fallback)).catch(() => fallback);
   let TRIPS, GALLERY, CFG;

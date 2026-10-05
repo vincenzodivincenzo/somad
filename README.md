@@ -3,8 +3,8 @@
 Web de [@somad.surftrips](https://www.instagram.com/somad.surftrips/).
 HTML + CSS + JS sin frameworks ni build. Se publica sola con GitHub Pages.
 
-**Live:** https://somad-surftrips.vercel.app (espejo estático en https://vincenzodivincenzo.github.io/somad/)
-**Panel de administración:** https://somad-surftrips.vercel.app/admin.html
+**Live:** https://somad-nu.vercel.app (espejo estático en https://vincenzodivincenzo.github.io/somad/)
+**Panel de administración:** https://somad-nu.vercel.app/admin.html
 
 ## Para SOMAD: cómo actualizar la web (sin tocar código)
 
