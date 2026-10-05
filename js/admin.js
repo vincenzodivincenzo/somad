@@ -1,7 +1,7 @@
 /* SOMAD admin · publishes straight to the GitHub repo that serves the site. */
 (function () {
   /* ───── config */
-  const API = location.hostname.endsWith("github.io") ? "https://somad.vercel.app" : "";
+  const API = location.hostname.endsWith("github.io") ? "https://somad-surftrips.vercel.app" : "";
   const KEY = "somad_admin_key";
   let token = localStorage.getItem(KEY) || sessionStorage.getItem(KEY) || "";
   let trips = [], gallery = [], site = {};
