@@ -43,7 +43,7 @@
 
   <header class="nav" id="nav">
     <div class="nav__inner">
-      <a href="#top" class="logo" aria-label="SOMAD inicio"><img src="assets/wordmark.svg" alt="SOMAD"></a>
+      <a href="#top" class="logo" aria-label="SOMAD inicio"><img src="assets/wordmark-nav.svg" alt="SOMAD"></a>
       <nav class="nav__links" id="nav-links">
         <a href="#viajes">Viajes</a>
         <a href="#calendario">Calendario</a>
@@ -65,8 +65,10 @@
 
   <main id="top">
 
-    <section class="hero">
-      <div class="hero__bg"></div>
+    <section class="hero" id="hero">
+      <div class="hero__bg">
+        <video class="hero__video" id="hero-video" muted playsinline loop autoplay preload="auto" aria-hidden="true" tabindex="-1"></video>
+      </div>
       <div class="hero__inner">
         <img class="hero__logo" src="assets/logo.svg" alt="SOMAD surftrips" width="720" height="300">
         <p class="hero__tag" id="hero-tag">Experiencias. Comunidad. Viajes.<br>Surfing y buenos momentos.</p>
@@ -132,11 +134,20 @@
         <div class="section__head">
           <div>
             <p class="eyebrow"><svg class="star"><use href="#star"/></svg> Calendario</p>
-            <h2>Los próximos 12 meses</h2>
+            <h2>¿Cuándo nos vamos?</h2>
           </div>
-          <p class="cal__legend"><span class="cal__dot cal__dot--trip"></span> viaje con fecha <span class="cal__dot cal__dot--soon"></span> por anunciar</p>
+          <p class="cal__legend"><span class="cal__dot cal__dot--trip"></span> viaje con fecha <span class="cal__dot cal__dot--past"></span> ya pasó</p>
         </div>
-        <div class="cal" id="calendar"></div>
+        <div class="calone sk" id="calendar">
+          <div class="calone__head">
+            <button class="calone__nav" id="cal-prev" aria-label="Mes anterior">←</button>
+            <div class="calone__title"><span class="calone__month" id="cal-month"></span><span class="calone__year" id="cal-year"></span></div>
+            <button class="calone__nav" id="cal-next" aria-label="Mes siguiente">→</button>
+          </div>
+          <div class="calone__grid" id="cal-grid"></div>
+          <div class="calone__list" id="cal-list"></div>
+          <button class="calone__today" id="cal-today">Volver a hoy</button>
+        </div>
       </div>
     </section>
 

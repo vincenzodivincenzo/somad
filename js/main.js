@@ -47,6 +47,17 @@
   set("year", String(new Date().getFullYear()));
   if (Array.isArray(CFG.polaroidCaptions)) document.querySelectorAll(".polaroids .pol figcaption").forEach((c, i) => { if (CFG.polaroidCaptions[i]) c.textContent = CFG.polaroidCaptions[i]; });
 
+  /* Hero reel: slow loop cut from their Instagram videos; skipped on reduced motion or data saver */
+  const hv = document.getElementById("hero-video");
+  if (hv && !matchMedia("(prefers-reduced-motion: reduce)").matches && !(navigator.connection && navigator.connection.saveData)) {
+    const portrait = matchMedia("(max-aspect-ratio: 4/5)").matches;
+    hv.poster = portrait ? "assets/video/poster-9x16.jpg" : "assets/video/poster-16x9.jpg";
+    hv.src = portrait ? "assets/video/hero-9x16.mp4" : "assets/video/hero-16x9.mp4";
+    const on = () => document.getElementById("hero").classList.add("hero--video");
+    hv.addEventListener("playing", on, { once: true });
+    hv.play().then(on).catch(() => {});
+  }
+
   /* Mobile nav */
   const burger = document.getElementById("burger");
   const links = document.getElementById("nav-links");
@@ -138,63 +149,69 @@
   if (g) g.innerHTML = GALLERY.map((p) => `
     <figure><a href="https://www.instagram.com/${esc(CFG.instagram)}/" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.alt || p.caption || "SOMAD")}" loading="lazy"></a>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
 
-  /* ───────── Calendar: next 12 months */
+  /* ───────── Calendar: one month at a time */
   const cal = document.getElementById("calendar");
   if (cal) {
     const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const DOW = ["L", "M", "X", "J", "V", "S", "D"];
     const dated = TRIPS.filter((t) => t.status !== "soon" && t.start);
-    const soonTrips = TRIPS.filter((t) => t.status === "soon");
-    const key = (d) => d.toISOString().slice(0, 10);
+    const key = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const dayMap = {};
     dated.forEach((t) => {
       const a = parse(t.start), b = parse(t.end) || a;
       for (let d = new Date(a); d <= b; d.setDate(d.getDate() + 1)) {
-        const k = key(d); dayMap[k] = dayMap[k] || { t, first: +d === +a, last: +d === +b };
+        const k = key(d); if (!dayMap[k]) dayMap[k] = { t, first: +d === +a, last: +d === +b };
       }
     });
-    // "soon" trips: guess the month from dateLabel (e.g. "Invierno 2026 / 27" → none; "Marzo 2027" → March)
-    const soonMonths = {};
-    soonTrips.forEach((t) => {
-      const m = MONTHS.findIndex((n) => (t.dateLabel || "").toLowerCase().includes(n));
-      const y = ((t.dateLabel || "").match(/20\d\d/) || [])[0];
-      if (m >= 0 && y) soonMonths[`${y}-${m}`] = t;
-    });
-    const months = [];
-    const start = new Date(today.getFullYear(), today.getMonth(), 1);
-    for (let i = 0; i < 12; i++) {
-      const m = new Date(start.getFullYear(), start.getMonth() + i, 1);
-      const y = m.getFullYear(), mi = m.getMonth();
-      const first = (m.getDay() + 6) % 7, days = new Date(y, mi + 1, 0).getDate();
-      const cells = [...DOW.map((d) => `<span class="dow">${d}</span>`), ...Array(first).fill("<span></span>")];
-      const tripsHere = new Map();
+    const firstTrip = dated.map((t) => parse(t.start)).sort((a, b) => a - b)[0];
+    const minMonth = new Date(Math.min(firstTrip || today, today)); minMonth.setDate(1);
+    const maxMonth = new Date(today.getFullYear(), today.getMonth() + 18, 1);
+    let cur = new Date(today.getFullYear(), today.getMonth(), 1);
+    // if nothing upcoming is dated, still open on today
+    const tripAction = (t) => {
+      const upcoming = isUpcoming(t);
+      const full = t.spots && t.spotsLeft !== undefined && t.spotsLeft <= 0;
+      return upcoming && !full ? `data-book="${esc(t.id)}"` : `data-list="${esc(t.title + " · " + t.dateLabel)}"`;
+    };
+    const render = () => {
+      const y = cur.getFullYear(), mi = cur.getMonth();
+      document.getElementById("cal-month").textContent = MONTHS[mi];
+      document.getElementById("cal-year").textContent = y;
+      const first = (cur.getDay() + 6) % 7, days = new Date(y, mi + 1, 0).getDate();
+      const prevDays = new Date(y, mi, 0).getDate();
+      const cells = DOW.map((d) => `<span class="dow">${d}</span>`);
+      for (let i = first - 1; i >= 0; i--) cells.push(`<span class="day out">${prevDays - i}</span>`);
+      const here = new Map();
       for (let d = 1; d <= days; d++) {
-        const date = new Date(y, mi, d), k = key(date), hit = dayMap[k];
-        const cls = ["day", hit ? "trip" : "", hit && hit.first ? "first" : "", hit && hit.last ? "last" : "", +date === +today ? "today" : "", date < today ? "past" : ""].filter(Boolean).join(" ");
-        cells.push(`<span class="${cls}">${d}</span>`);
-        if (hit) tripsHere.set(hit.t.id, hit.t);
+        const date = new Date(y, mi, d), hit = dayMap[key(date)];
+        const done = hit && !isUpcoming(hit.t);
+        const cls = ["day", hit ? "trip" : "", hit && hit.first ? "first" : "", hit && hit.last ? "last" : "", done ? "done" : "", +date === +today ? "today" : "", date < today ? "past" : ""].filter(Boolean).join(" ");
+        cells.push(`<span class="${cls}" ${hit ? tripAction(hit.t) : ""} ${hit ? `title="${esc(hit.t.title)}"` : ""}>${d}</span>`);
+        if (hit) here.set(hit.t.id, hit.t);
       }
-      const soon = soonMonths[`${y}-${mi}`];
-      const list = [...tripsHere.values()].map((t) => {
-        const upcoming = isUpcoming(t);
-        const attr = upcoming && t.status !== "soon" && !(t.spots && t.spotsLeft !== undefined && t.spotsLeft <= 0) ? `data-book="${esc(t.id)}"` : `data-list="${esc(t.title + " · " + t.dateLabel)}"`;
-        return `<button class="month__trip" ${attr}>${esc(t.title)} <small>${esc(t.dateLabel)}</small></button>`;
-      }).join("");
-      const isCurrent = i === 0;
-      months.push(`<div class="month sk ${["", "sk--2", "sk--3"][i % 3]} ${soon ? "month--soon" : ""}">
-        ${isCurrent ? `<span class="month__sticker">hoy</span>` : ""}
-        <div class="month__head"><span class="month__name">${MONTHS[mi]}</span><span class="month__year">${y}</span></div>
-        <div class="month__grid">${cells.join("")}</div>
-        ${list ? `<div class="month__trips">${list}</div>` : ""}
-        ${soon ? `<button class="month__soon" data-list="">${esc(soon.title)} · por anunciar</button>` : ""}
-      </div>`);
-    }
-    cal.innerHTML = months.join("");
-    if (!dated.some(isUpcoming) && soonTrips.length && !Object.keys(soonMonths).length) {
-      // nothing dated yet: pin the "soon" trip on the first month as a dashed note
-      const firstMonth = cal.querySelector(".month");
-      if (firstMonth) firstMonth.insertAdjacentHTML("beforeend", `<button class="month__soon" data-list="">${esc(soonTrips[0].title)} · ${esc(soonTrips[0].dateLabel)}</button>`);
-    }
+      const rest = (7 - ((first + days) % 7)) % 7;
+      for (let i = 1; i <= rest; i++) cells.push(`<span class="day out">${i}</span>`);
+      document.getElementById("cal-grid").innerHTML = cells.join("");
+      const list = [...here.values()];
+      document.getElementById("cal-list").innerHTML = list.length ? list.map((t) => {
+        const done = !isUpcoming(t);
+        const full = t.spots && t.spotsLeft !== undefined && t.spotsLeft <= 0;
+        const label = done ? "Avísame del próximo" : full ? "Lista de espera" : "Reservar plaza";
+        return `<div class="calone__trip ${done ? "calone__trip--done" : ""}" ${tripAction(t)}><div><b>${esc(t.title)}</b><small>${esc(t.dateLabel)}${t.place ? ` · ${esc(t.place)}` : ""}${t.price && !done ? ` · ${esc(t.price)} €` : ""}</small></div><span class="btn ${done ? "btn--paper" : "btn--sun"} btn--sm">${label}</span></div>`;
+      }).join("") : `<p class="calone__empty">${mi === today.getMonth() && y === today.getFullYear() ? "Este mes no hay viaje. Apúntate a la lista y te avisamos del próximo." : "Sin viajes este mes."}</p>`;
+      document.getElementById("cal-prev").disabled = cur <= minMonth;
+      document.getElementById("cal-next").disabled = cur >= maxMonth;
+      document.getElementById("cal-today").hidden = mi === today.getMonth() && y === today.getFullYear();
+    };
+    const go = (n) => { cur = new Date(cur.getFullYear(), cur.getMonth() + n, 1); render(); };
+    document.getElementById("cal-prev").addEventListener("click", () => go(-1));
+    document.getElementById("cal-next").addEventListener("click", () => go(1));
+    document.getElementById("cal-today").addEventListener("click", () => { cur = new Date(today.getFullYear(), today.getMonth(), 1); render(); });
+    cal.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); });
+    let sx = null;
+    cal.addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
+    cal.addEventListener("touchend", (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); sx = null; });
+    render();
   }
 
   /* ───────── Waiting list (CRM) */
@@ -316,7 +333,7 @@
   function showErr(m) { errBox.textContent = m; errBox.hidden = false; }
 
   /* Reveal on scroll */
-  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure,.month").forEach((el) => el.classList.add("reveal"));
+  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure").forEach((el) => el.classList.add("reveal"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
   }, { threshold: 0.1 });
