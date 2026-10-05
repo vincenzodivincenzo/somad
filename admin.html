@@ -26,14 +26,10 @@
     <div class="login__card sk">
       <img src="assets/logo.svg" alt="SOMAD" class="login__logo">
       <h1>Panel SOMAD</h1>
-      <p>Aquí subes viajes, fotos y cambias los textos de la web. Todo lo que guardes se publica solo en 1 o 2 minutos.</p>
+      <p>Viajes, fotos, textos, lista de espera y reservas. Lo que guardes se ve en la web al momento.</p>
       <label class="field">
-        <span>Clave de publicación</span>
+        <span>Clave de acceso</span>
         <input type="password" id="token" placeholder="Pégala aquí" autocomplete="off">
-      </label>
-      <label class="field">
-        <span>Clave de lista de espera <small>(opcional, para ver el CRM)</small></span>
-        <input type="password" id="crm-key" placeholder="Pégala aquí" autocomplete="off">
       </label>
       <label class="check"><input type="checkbox" id="remember" checked> Recordar en este dispositivo</label>
       <button class="btn btn--sun" id="login-btn">Entrar</button>
@@ -154,9 +150,7 @@
           <label class="field"><span>Frase grande de la portada</span><input name="heroTitle" placeholder="Surf, buena gente y buenos momentos."></label>
           <label class="field"><span>Texto debajo de la frase</span><textarea name="heroSub" rows="3"></textarea></label>
           <label class="field"><span>Pies de las 3 fotos polaroid de la portada (separados por comas)</span><input name="polaroidCaptions" placeholder="Asturias ✌️, Lanzarote 🇮🇨, Ericeira 🇵🇹"></label>
-          <h3 class="form__sub">Base de datos de la lista de espera (Supabase)</h3>
-          <label class="field"><span>URL del proyecto</span><input name="supabaseUrl" placeholder="https://xxxx.supabase.co"></label>
-          <label class="field"><span>Anon key (es pública, no pasa nada por ponerla aquí)</span><input name="supabaseAnonKey" placeholder="eyJ…"></label>
+
           <div class="pane__foot"><button class="btn btn--sun" type="submit">Guardar</button></div>
         </form>
       </section>
@@ -206,7 +200,7 @@
         <button type="button" class="btn btn--paper" id="trip-delete" hidden>Borrar viaje</button>
         <span class="spacer"></span>
         <button type="button" class="btn btn--paper" id="trip-cancel">Cancelar</button>
-        <button type="submit" class="btn btn--sun" id="trip-save">Guardar y publicar</button>
+        <button type="submit" class="btn btn--sun" id="trip-save">Guardar</button>
       </div>
     </form>
   </dialog>

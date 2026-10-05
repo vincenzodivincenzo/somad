@@ -1,19 +1,9 @@
 /* SOMAD admin · publishes straight to the GitHub repo that serves the site. */
 (function () {
-  /* ───── config: detect owner/repo from the GitHub Pages URL, with a fallback */
-  const host = location.hostname;
-  const seg = location.pathname.split("/").filter(Boolean);
-  const OWNER = host.endsWith(".github.io") ? host.split(".")[0] : "vincenzodivincenzo";
-  const REPO = host.endsWith(".github.io") && seg[0] && !seg[0].endsWith(".html") ? seg[0] : "somad";
-  const BRANCH = "main";
-  const API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
-  const KEY = "somad_admin_token";
-  const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-
-  const CRM_KEY = "somad_crm_key";
+  /* ───── config */
+  const API = location.hostname.endsWith("github.io") ? "https://somad.vercel.app" : "";
+  const KEY = "somad_admin_key";
   let token = localStorage.getItem(KEY) || sessionStorage.getItem(KEY) || "";
-  let crmKey = localStorage.getItem(CRM_KEY) || sessionStorage.getItem(CRM_KEY) || "";
-  const shas = {};
   let trips = [], gallery = [], site = {};
   let galleryDirty = false;
 
@@ -28,37 +18,17 @@
     clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), err ? 7000 : 4000);
   };
 
-  /* ───── GitHub API */
-  const headers = () => ({ Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" });
-  const utf8ToB64 = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
-  const b64ToUtf8 = (b) => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-
-  async function getJson(path) {
-    const r = await fetch(API + path + `?ref=${BRANCH}&t=${Date.now()}`, { headers: headers(), cache: "no-store" });
-    if (r.status === 404) return null;
-    if (r.status === 401 || r.status === 403) throw new Error("Tu clave ha caducado o no es válida. Vuelve a entrar.");
-    if (!r.ok) throw new Error(`No pude leer ${path} (${r.status})`);
-    const j = await r.json();
-    shas[path] = j.sha;
-    return JSON.parse(b64ToUtf8(j.content));
-  }
-
-  async function putFile(path, contentB64, message, retry = true) {
-    const body = { message, content: contentB64, branch: BRANCH };
-    if (shas[path]) body.sha = shas[path];
-    const r = await fetch(API + path, { method: "PUT", headers: headers(), body: JSON.stringify(body) });
-    if (r.status === 409 || r.status === 422) {
-      if (!retry) throw new Error(`Conflicto guardando ${path}`);
-      const cur = await fetch(API + path + `?ref=${BRANCH}&t=${Date.now()}`, { headers: headers(), cache: "no-store" });
-      if (cur.ok) shas[path] = (await cur.json()).sha; else delete shas[path];
-      return putFile(path, contentB64, message, false);
-    }
-    if (!r.ok) throw new Error(`Error ${r.status} guardando ${path}`);
-    const j = await r.json();
-    shas[path] = j.content.sha;
+  /* ───── API */
+  const headers = () => ({ "x-admin-key": token, "Content-Type": "application/json" });
+  async function api(path, opts = {}) {
+    const r = await fetch(`${API}${path}`, { cache: "no-store", ...opts, headers: { ...headers(), ...(opts.headers || {}) } });
+    if (r.status === 401) throw Object.assign(new Error("La clave no es válida o ha cambiado. Vuelve a entrar."), { auth: true });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
     return j;
   }
-  const putJson = (path, data, msg) => putFile(path, utf8ToB64(JSON.stringify(data, null, 2) + "\n"), msg);
+  const putContent = (kind, data) => api("/api/admin/content", { method: "PUT", body: JSON.stringify({ kind, data }) });
+  const putJson = (path, data) => putContent(path.includes("trips") ? "trips" : path.includes("gallery") ? "gallery" : "settings", data);
 
   /* ───── image resize (max 1600px, JPEG) */
   function resizeImage(file, max = 1600, q = 0.82) {
@@ -79,9 +49,8 @@
   const slug = (s) => (s || "foto").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 40);
   async function uploadImage(file, name) {
     const blob = await resizeImage(file);
-    const path = `assets/img/uploads/${slug(name)}-${Date.now().toString(36)}.jpg`;
-    await putFile(path, await blobToB64(blob), `Foto: ${path}`);
-    return path;
+    const { url } = await api("/api/admin/upload", { method: "POST", body: JSON.stringify({ name: slug(name), type: "image/jpeg", data: await blobToB64(blob) }) });
+    return url;
   }
 
   /* ───── dates */
@@ -100,10 +69,9 @@
 
   /* ───── login */
   async function tryLogin(tok) {
-    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, { headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" } });
-    if (!r.ok) throw new Error(r.status === 401 ? "Clave no válida" : `No tengo acceso al sitio (${r.status})`);
-    const j = await r.json();
-    if (!j.permissions || !j.permissions.push) throw new Error("Esta clave no tiene permiso para publicar");
+    const r = await fetch(`${API}/api/admin/ping`, { headers: { "x-admin-key": tok }, cache: "no-store" });
+    if (r.status === 401) throw new Error("Clave no válida");
+    if (!r.ok) throw new Error(`El servidor no responde (${r.status}). Prueba en un minuto.`);
   }
   $("#login-btn").addEventListener("click", async () => {
     const tok = $("#token").value.trim();
@@ -113,27 +81,26 @@
     try {
       await tryLogin(tok);
       token = tok;
-      crmKey = $("#crm-key").value.trim();
-      const store = $("#remember").checked ? localStorage : sessionStorage;
-      store.setItem(KEY, tok);
-      if (crmKey) store.setItem(CRM_KEY, crmKey);
+      ($("#remember").checked ? localStorage : sessionStorage).setItem(KEY, tok);
       await start();
     } catch (e) { $("#login-err").textContent = e.message; }
     busy(false);
   });
   $("#token").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#login-btn").click(); });
-  $("#logout").addEventListener("click", () => { [KEY, CRM_KEY].forEach((k) => { localStorage.removeItem(k); sessionStorage.removeItem(k); }); location.reload(); });
+  $("#logout").addEventListener("click", () => { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); location.reload(); });
 
   async function start() {
     busy(true, "Cargando…");
     try {
-      [trips, gallery, site] = await Promise.all([getJson("data/trips.json"), getJson("data/gallery.json"), getJson("data/site.json")]);
-      trips = trips || []; gallery = gallery || []; site = site || {};
+      await tryLogin(token);
+      const c = await api("/api/content");
+      trips = c.trips || []; gallery = c.gallery || []; site = c.settings || {};
       $("#login").hidden = true; $("#app").hidden = false;
       renderTrips(); renderGallery(); fillSettings(); initLeads(); initBookings();
     } catch (e) {
       toast(e.message, true);
       localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); token = "";
+      $("#login").hidden = false;
     }
     busy(false);
   }
@@ -169,7 +136,7 @@
     const j = b.dataset.act === "up" ? i - 1 : i + 1;
     [trips[i], trips[j]] = [trips[j], trips[i]];
     renderTrips();
-    await publish(() => putJson("data/trips.json", trips, "Reordenar viajes"), "Orden guardado");
+    await publish(() => putJson("data/trips.json", trips), "Orden guardado");
   });
 
   const dlg = $("#trip-dlg"), form = $("#trip-form");
@@ -202,7 +169,7 @@
   $("#trip-delete").addEventListener("click", async () => {
     if (!confirm(`¿Borrar el viaje "${trips[editIndex].title}"? Esto no se puede deshacer.`)) return;
     trips.splice(editIndex, 1); dlg.close(); renderTrips();
-    await publish(() => putJson("data/trips.json", trips, "Borrar viaje"), "Viaje borrado y publicado");
+    await publish(() => putJson("data/trips.json", trips), "Viaje borrado y publicado");
   });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -228,7 +195,7 @@
       if (pendingFile) { busy(true, "Subiendo foto…"); t.image = await uploadImage(pendingFile, t.title); }
       busy(true, "Publicando viaje…");
       if (editIndex < 0) trips.unshift(t); else trips[editIndex] = t;
-      await putJson("data/trips.json", trips, `Viaje: ${t.title}`);
+      await putJson("data/trips.json", trips);
       renderTrips();
     }, "Viaje publicado · visible en 1-2 min");
   });
@@ -260,11 +227,11 @@
       let n = 0;
       for (const f of files) { busy(true, `Subiendo foto ${++n} de ${files.length}…`); gallery.push({ src: await uploadImage(f, f.name.replace(/\.[^.]+$/, "")), alt: "SOMAD", caption: "" }); }
       busy(true, "Publicando…");
-      await putJson("data/gallery.json", gallery, `Fotos: +${files.length}`);
+      await putJson("data/gallery.json", gallery);
       galleryDirty = false; renderGallery();
     }, `${files.length} foto${files.length > 1 ? "s" : ""} publicada${files.length > 1 ? "s" : ""}`);
   });
-  $("#save-gallery").addEventListener("click", () => publish(async () => { await putJson("data/gallery.json", gallery, "Actualizar fotos"); galleryDirty = false; renderGallery(); }, "Fotos guardadas y publicadas"));
+  $("#save-gallery").addEventListener("click", () => publish(async () => { await putJson("data/gallery.json", gallery); galleryDirty = false; renderGallery(); }, "Fotos guardadas y publicadas"));
 
   /* ───── settings */
   const sf = $("#settings-form");
@@ -276,41 +243,21 @@
     for (const el of sf.elements) if (el.name) site[el.name] = el.value.trim();
     site.whatsapp = site.whatsapp.replace(/\D/g, "");
     site.instagram = site.instagram.replace(/^@/, "");
-    site.supabaseUrl = site.supabaseUrl.replace(/\/$/, "");
     site.polaroidCaptions = String(site.polaroidCaptions || "").split(",").map((x) => x.trim()).filter(Boolean);
-    await publish(() => putJson("data/site.json", site, "Actualizar textos y contacto"), "Guardado y publicado");
+    await publish(() => putJson("data/site.json", site), "Guardado y publicado");
   });
 
-  /* ───── CRM (Supabase REST) */
+  /* ───── CRM */
   let leads = [], leadFilter = "all", leadQuery = "", editLead = null;
   const STATUS = { nuevo: "Nuevo", contactado: "Contactado", reservado: "Reservado", descartado: "Descartado" };
   const LEVEL = { nunca: "Nunca ha surfeado", principiante: "Principiante", intermedio: "Intermedio", avanzado: "Avanzado" };
-  const dbReady = () => Boolean(site.supabaseUrl && site.supabaseAnonKey && crmKey);
-  const dbHeaders = () => ({ apikey: site.supabaseAnonKey, Authorization: `Bearer ${site.supabaseAnonKey}`, "x-admin-key": crmKey, "Content-Type": "application/json", Prefer: "return=representation" });
-  const dbUrl = (q, table = "leads") => `${site.supabaseUrl.replace(/\/$/, "")}/rest/v1/${table}${q || ""}`;
+  const dbReady = () => true;
 
-  function initLeads() {
-    const setup = $("#leads-setup"), ui = $("#leads-ui");
-    if (!dbReady()) {
-      setup.hidden = false; ui.hidden = true;
-      $("#leads-setup-text").textContent = !site.supabaseUrl || !site.supabaseAnonKey
-        ? "Aún no hay URL ni anon key de Supabase en “Textos y contacto”."
-        : "Has entrado sin la clave de lista de espera. Sal y vuelve a entrar poniéndola.";
-      return;
-    }
-    setup.hidden = true; ui.hidden = false;
-    loadLeads();
-  }
+  function initLeads() { $("#leads-setup").hidden = true; $("#leads-ui").hidden = false; loadLeads(); }
   async function loadLeads() {
     try {
-      const r = await fetch(dbUrl("?select=*&order=created_at.desc&limit=1000"), { headers: dbHeaders(), cache: "no-store" });
-      if (r.status === 401 || r.status === 403) throw new Error("Supabase ha rechazado la clave (revisa anon key).");
-      if (!r.ok) throw new Error(`No pude leer la lista (${r.status})`);
-      leads = await r.json();
-      if (!leads.length) {
-        // RLS returns an empty list when the admin key is wrong; tell the admin instead of showing nothing.
-        $("#leads-list").innerHTML = `<p class="empty">No hay nadie en la lista todavía. Si debería haber gente, la clave de lista de espera no coincide con la de la base de datos.</p>`;
-      }
+      leads = await api("/api/leads");
+      if (!leads.length) $("#leads-list").innerHTML = `<p class="empty">Nadie en la lista todavía. En cuanto alguien se apunte en la web aparece aquí.</p>`;
       renderLeads();
     } catch (e) { toast(e.message, true); }
   }
@@ -366,9 +313,7 @@
     if (patch.status !== "nuevo" && !editLead.contacted_at) patch.contacted_at = new Date().toISOString();
     ldlg.close();
     await publish(async () => {
-      const r = await fetch(dbUrl(`?id=eq.${editLead.id}`), { method: "PATCH", headers: dbHeaders(), body: JSON.stringify(patch) });
-      if (!r.ok) throw new Error(`No pude guardar (${r.status})`);
-      const [row] = await r.json(); if (!row) throw new Error("La clave de lista de espera no permite editar.");
+      const row = await api(`/api/leads?id=${editLead.id}`, { method: "PATCH", body: JSON.stringify(patch) });
       Object.assign(editLead, row); renderLeads();
     }, "Guardado");
   });
@@ -376,8 +321,7 @@
     if (!confirm(`¿Borrar a ${editLead.name} de la lista? No se puede deshacer.`)) return;
     ldlg.close();
     await publish(async () => {
-      const r = await fetch(dbUrl(`?id=eq.${editLead.id}`), { method: "DELETE", headers: dbHeaders() });
-      if (!r.ok) throw new Error(`No pude borrar (${r.status})`);
+      await api(`/api/leads?id=${editLead.id}`, { method: "DELETE" });
       leads = leads.filter((l) => l.id !== editLead.id); renderLeads();
     }, "Borrado");
   });
@@ -385,16 +329,10 @@
   /* ───── Bookings */
   let bookings = [], bookFilter = "all", bookTrip = "all", editBooking = null;
   const BSTATUS = { solicitada: "Solicitada", confirmada: "Confirmada", pagada: "Pagada", cancelada: "Cancelada" };
-  function initBookings() {
-    const setup = $("#bookings-setup"), ui = $("#bookings-ui");
-    if (!dbReady()) { setup.hidden = false; ui.hidden = true; return; }
-    setup.hidden = true; ui.hidden = false; loadBookings();
-  }
+  function initBookings() { $("#bookings-setup").hidden = true; $("#bookings-ui").hidden = false; loadBookings(); }
   async function loadBookings() {
     try {
-      const r = await fetch(dbUrl("?select=*&order=created_at.desc&limit=1000", "bookings"), { headers: dbHeaders(), cache: "no-store" });
-      if (!r.ok) throw new Error(`No pude leer las reservas (${r.status})`);
-      bookings = await r.json();
+      bookings = await api("/api/bookings");
       const sel = $("#bookings-trip");
       const tripsSeen = [...new Map(bookings.map((b) => [b.trip_id, b.trip_title + (b.trip_date ? ` · ${b.trip_date}` : "")])).entries()];
       sel.innerHTML = `<option value="all">Todos los viajes</option>` + tripsSeen.map(([id, t]) => `<option value="${esc(id)}">${esc(t)}</option>`).join("");
@@ -450,9 +388,7 @@
     const patch = { status: bform.status.value, notes: bform.notes.value.trim() || null };
     bdlg.close();
     await publish(async () => {
-      const r = await fetch(dbUrl(`?id=eq.${editBooking.id}`, "bookings"), { method: "PATCH", headers: dbHeaders(), body: JSON.stringify(patch) });
-      if (!r.ok) throw new Error(`No pude guardar (${r.status})`);
-      const [row] = await r.json(); if (!row) throw new Error("La clave de lista de espera no permite editar.");
+      const row = await api(`/api/bookings?id=${editBooking.id}`, { method: "PATCH", body: JSON.stringify(patch) });
       Object.assign(editBooking, row); renderBookings(); renderTrips();
     }, "Guardado");
   });
@@ -460,8 +396,7 @@
     if (!confirm(`¿Borrar la reserva de ${editBooking.name}? No se puede deshacer.`)) return;
     bdlg.close();
     await publish(async () => {
-      const r = await fetch(dbUrl(`?id=eq.${editBooking.id}`, "bookings"), { method: "DELETE", headers: dbHeaders() });
-      if (!r.ok) throw new Error(`No pude borrar (${r.status})`);
+      await api(`/api/bookings?id=${editBooking.id}`, { method: "DELETE" });
       bookings = bookings.filter((b) => b.id !== editBooking.id); renderBookings(); renderTrips();
     }, "Borrada");
   });
@@ -469,7 +404,7 @@
   /* ───── publish wrapper */
   async function publish(fn, okMsg) {
     busy(true, "Guardando…");
-    try { await fn(); toast(okMsg); }
+    try { await fn(); toast(okMsg.replace(" · visible en 1-2 min", "")); }
     catch (err) { console.error(err); toast(err.message || "Algo falló. Vuelve a intentarlo.", true); }
     busy(false);
   }

@@ -1,0 +1,28 @@
+{
+  "name": "somad",
+  "version": "1.0.0",
+  "description": "Web de [@somad.surftrips](https://www.instagram.com/somad.surftrips/). HTML + CSS + JS sin frameworks ni build. Se publica sola con GitHub Pages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vincenzodivincenzo/somad.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/vincenzodivincenzo/somad/issues"
+  },
+  "homepage": "https://github.com/vincenzodivincenzo/somad#readme",
+  "private": "true",
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

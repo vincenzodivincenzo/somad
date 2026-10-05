@@ -3,55 +3,37 @@
 Web de [@somad.surftrips](https://www.instagram.com/somad.surftrips/).
 HTML + CSS + JS sin frameworks ni build. Se publica sola con GitHub Pages.
 
-**Live:** https://vincenzodivincenzo.github.io/somad/
-**Panel de administración:** https://vincenzodivincenzo.github.io/somad/admin.html
+**Live:** https://somad.vercel.app (espejo estático en https://vincenzodivincenzo.github.io/somad/)
+**Panel de administración:** https://somad.vercel.app/admin.html
 
 ## Para SOMAD: cómo actualizar la web (sin tocar código)
 
-1. Abre el **panel** (enlace arriba) y pega tus claves: la de publicación y la de lista de espera. Marca “Recordar” y no las vuelves a necesitar en ese dispositivo.
+1. Abre el **panel** y pega tu clave de acceso. Marca “Recordar” y no la vuelves a necesitar en ese dispositivo.
 2. **Lista de espera** → cada persona que se apunta en la web aparece aquí con su nivel, viaje de interés y WhatsApp. Pulsa en una para cambiar el estado (nuevo → contactado → reservado), escribir notas o abrirle un WhatsApp con el mensaje ya empezado. “Exportar CSV” se abre en Excel o Google Sheets.
-3. **Viajes** → “+ Nuevo viaje”: nombre, lugar, país, fechas, descripción, etiquetas y una foto. “Guardar y publicar”.
-   - Si aún no hay fechas, marca “Todavía sin fechas (próximamente)”.
-   - Cuando pasa la fecha, el viaje se mueve solo a “Donde ya hemos estado”.
-   - Las flechas ↑↓ cambian el orden.
-4. **Fotos** → “+ Añadir fotos” (puedes elegir varias). Se reducen solas. Pie de foto opcional. Las dos primeras salen grandes.
-5. **Textos y contacto** → WhatsApp, Instagram, seguidores, aviso de la barra superior y frases de la portada.
+3. **Reservas** → solicitudes de plaza en viajes con fecha. Confirma cuando llegue la señal; las plazas libres de la web se recalculan solas.
+4. **Viajes** → “+ Nuevo viaje”: nombre, lugar, país, fechas, descripción, etiquetas, precio, señal, plazas, enlace de pago y una foto. Si aún no hay fechas, marca “Todavía sin fechas”. Cuando pasa la fecha el viaje se mueve solo a “Donde ya hemos estado”. Las flechas ↑↓ cambian el orden.
+5. **Fotos** → “+ Añadir fotos” (varias a la vez). Se reducen solas. Pie de foto opcional.
+6. **Textos y contacto** → WhatsApp, Instagram, seguidores, aviso de la barra superior, frases de portada y pies de las polaroids.
 
-Los cambios tardan **1 o 2 minutos** en verse. Si no los ves, recarga con Cmd+Shift+R.
+Todo se ve en la web **al momento** (la copia de GitHub Pages puede tardar hasta un minuto en refrescar el contenido).
 
-## Para Vincenzo: poner en marcha la lista de espera (una vez, 10 min)
+## Para Vincenzo: cómo está montado
 
-La web es estática, así que las solicitudes van a una base de datos gratuita en Supabase. Sólo pueden **insertar** desde la web; leer y editar exige la clave de lista de espera (cabecera `x-admin-key` comprobada por RLS).
-
-1. Crea un proyecto en [supabase.com](https://supabase.com) (plan Free).
-2. Abre `supabase/schema.sql`, cambia `CAMBIA-ESTA-CLAVE` por una clave larga y pega todo en **SQL Editor → Run**.
-3. En **Project Settings → API** copia la *Project URL* y la *anon public key*.
-4. Entra en el panel → “Textos y contacto” → pega URL y anon key → Guardar. La anon key es pública por diseño; la seguridad está en las políticas RLS del SQL.
-5. Sal del panel y vuelve a entrar poniendo también la clave de lista de espera. Pásasela a SOMAD junto con la de publicación.
-
-Hasta que esto esté configurado, el botón “Apuntarme a la lista” de la web abre WhatsApp con los datos del formulario ya escritos, así no se pierde nadie.
-
-Para cambiar la clave más adelante: `update private.settings set value = 'NUEVA' where key = 'admin_key';` en el SQL Editor.
-
-## Para Vincenzo: dar acceso a alguien (clave de publicación)
-
-El panel escribe directamente en este repo usando la API de GitHub, con un token.
-
-1. GitHub → Settings → Developer settings → **Fine-grained personal access tokens** → Generate new token.
-2. Resource owner: `vincenzodivincenzo`. Repository access: **Only select repositories → somad**.
-3. Permissions → Repository permissions → **Contents: Read and write**. Nada más.
-4. Expiración: la máxima que te deje (o sin expiración). Copia el token y pásaselo a SOMAD por un canal privado.
-
-Para revocar el acceso, borra el token en la misma pantalla. El panel guarda el token solo en el navegador de quien lo usa (localStorage).
+- **Hosting + API:** Vercel, proyecto `somad` (team *Proper Brand*), desplegado desde este repo en cada push a `main`. La web también se sirve en GitHub Pages; esa copia llama a la API de Vercel cross-origin.
+- **Datos:** Vercel Blob (store privado `somad-media`). Documentos JSON: `content/{trips,gallery,settings}.json`, `data/{leads,bookings}.json`. Escrituras con `ifMatch` (etag) para no pisar cambios concurrentes. Fotos subidas: `img/*` en el mismo store, servidas por `/api/media?p=…` con caché de un año.
+- **Semilla:** si un documento no existe en Blob, la API devuelve el JSON del repo (`data/*.json`). Los JSON del repo son sólo el arranque; la verdad vive en Blob.
+- **Auth del panel:** una sola clave, variable de entorno `ADMIN_KEY` en Vercel (cabecera `x-admin-key`, comparación en tiempo constante). Para rotarla: `vercel env rm ADMIN_KEY` + `vercel env add ADMIN_KEY` y avisar a SOMAD. La clave actual está en `../somad-CLAVES.txt` (fuera del repo; muévela a un gestor de contraseñas y borra el archivo).
+- **API** (`/api`): `GET content`, `GET counts`, `POST leads|bookings` (público, con honeypot y validación), `GET|PATCH|DELETE leads|bookings?id=` (admin), `PUT admin/content`, `POST admin/upload`, `GET admin/ping`, `GET media`.
+- **Local:** `vercel dev` levanta web + API con las variables de `.env.local` (`vercel env pull`).
 
 ## Estructura
 
 | Qué | Dónde |
 |---|---|
-| Lista de espera | Tabla `leads` en Supabase (`supabase/schema.sql`); la web inserta, el panel gestiona |
-| Viajes | `data/trips.json` (lo edita el panel) |
-| Fotos de la galería | `data/gallery.json` + `assets/img/uploads/` |
-| WhatsApp, Instagram, textos de portada, pies de polaroid, credenciales públicas de Supabase | `data/site.json` |
+| Lista de espera y reservas | Blob `data/leads.json`, `data/bookings.json` (vía API) |
+| Viajes, galería, ajustes | Blob `content/*.json` (vía panel); semilla en `data/*.json` |
+| Fotos subidas desde el panel | Blob `img/*`, servidas por `/api/media` |
+| Lógica del servidor | `api/*.js`, `lib/*.js` (Node 22, `@vercel/blob`) |
 | Textos fijos, FAQ, destinos | `index.html` |
 | Colores, fuentes, bordes a lápiz | `css/style.css` → bloque `:root` y `.sk` |
 | Logo vectorizado | `assets/logo.svg` (completo), `assets/wordmark.svg` (solo SOMAD), `assets/star.svg`, `assets/favicon.svg` |
@@ -64,9 +46,9 @@ Para revocar el acceso, borra el token en la misma pantalla. El panel guarda el 
 
 ## Local
 ```bash
-python3 -m http.server 8080
+vercel dev
 ```
-http://localhost:8080 (el panel funciona en local también, publica al repo real).
+Sólo estático (sin API, la web usa los JSON del repo y el formulario cae a WhatsApp): `python3 -m http.server 8080`.
 
 ## Pendiente
 - Fotos en alta resolución (las actuales son de Instagram a 640px).

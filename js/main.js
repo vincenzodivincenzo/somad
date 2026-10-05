@@ -1,19 +1,26 @@
 (async function () {
+  /* API lives on Vercel; the static copy on GitHub Pages calls it cross-origin */
+  const API = location.hostname.endsWith("github.io") ? "https://somad.vercel.app" : "";
   const noCache = { cache: "no-store" };
   const load = (p, fallback) => fetch(p, noCache).then((r) => (r.ok ? r.json() : fallback)).catch(() => fallback);
-  const [TRIPS, GALLERY, CFG] = await Promise.all([
-    load("data/trips.json", []),
-    load("data/gallery.json", []),
-    load("data/site.json", { whatsapp: "34661163140", instagram: "somad.surftrips" })
-  ]);
-
-  const hasDb = Boolean(CFG.supabaseUrl && CFG.supabaseAnonKey);
-  const dbBase = hasDb ? CFG.supabaseUrl.replace(/\/$/, "") : "";
-  const dbHead = { apikey: CFG.supabaseAnonKey, Authorization: `Bearer ${CFG.supabaseAnonKey}`, "Content-Type": "application/json" };
+  let TRIPS, GALLERY, CFG;
+  let hasDb = false;
+  try {
+    const r = await fetch(`${API}/api/content`, noCache);
+    if (!r.ok) throw new Error(r.status);
+    ({ trips: TRIPS, gallery: GALLERY, settings: CFG } = await r.json());
+    hasDb = true;
+  } catch (_) {
+    [TRIPS, GALLERY, CFG] = await Promise.all([
+      load("data/trips.json", []),
+      load("data/gallery.json", []),
+      load("data/site.json", { whatsapp: "34661163140", instagram: "somad.surftrips" })
+    ]);
+  }
   if (hasDb) {
     try {
-      const r = await fetch(`${dbBase}/rest/v1/rpc/trip_counts`, { method: "POST", headers: dbHead, body: "{}" });
-      if (r.ok) { const taken = Object.fromEntries((await r.json()).map((x) => [x.trip_id, Number(x.taken)])); TRIPS.forEach((t) => { if (t.spots) t.spotsLeft = Math.max(0, t.spots - (taken[t.id] || 0)); }); }
+      const r = await fetch(`${API}/api/counts`, noCache);
+      if (r.ok) { const taken = await r.json(); TRIPS.forEach((t) => { if (t.spots) t.spotsLeft = Math.max(0, t.spots - (taken[t.id] || 0)); }); }
     } catch (_) { /* sin contador no pasa nada */ }
   }
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -294,19 +301,15 @@
     const btn = document.getElementById("list-submit");
     btn.disabled = true; btn.textContent = "Enviando…";
     try {
-      const r = await fetch(`${dbBase}/rest/v1/${table}`, {
-        method: "POST",
-        headers: { ...dbHead, Prefer: "return=minimal" },
-        body: JSON.stringify(payload)
-      });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const r = await fetch(`${API}/api/${table}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || `HTTP ${r.status}`); }
       const keepMode = mode, keepTrip = bookTrip;
       form.reset(); if (interestSel) interestSel.value = "El próximo, sea donde sea";
       mode = keepMode; bookTrip = keepTrip;
       showOk();
     } catch (err) {
       console.error(err);
-      showErr("No hemos podido guardarlo. Prueba otra vez o escríbenos por WhatsApp.");
+      showErr(/Email|nombre|consentimiento/.test(err.message) ? err.message : "No hemos podido guardarlo. Prueba otra vez o escríbenos por WhatsApp.");
     }
     btn.disabled = false; btn.textContent = mode === "book" ? "Solicitar plaza" : "Apuntarme";
   });
