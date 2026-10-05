@@ -46,17 +46,18 @@
       <a href="#top" class="logo" aria-label="SOMAD inicio"><img src="assets/wordmark.svg" alt="SOMAD"></a>
       <nav class="nav__links" id="nav-links">
         <a href="#viajes">Viajes</a>
+        <a href="#calendario">Calendario</a>
         <a href="#destinos">Destinos</a>
         <a href="#como">Cómo funciona</a>
         <a href="#comunidad">Comunidad</a>
         <a href="#faq">FAQ</a>
-        <a class="btn btn--ink btn--sm nav__cta-mobile" data-list="">Lista de espera</a>
+        <a class="btn btn--sun btn--sm nav__cta-mobile" data-list="">Lista de espera</a>
       </nav>
       <div class="nav__right">
         <a class="nav__ig" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
         </a>
-        <a class="btn btn--ink btn--sm nav__cta" data-list="">Lista de espera</a>
+        <a class="btn btn--sun btn--sm nav__cta" data-list="">Lista de espera</a>
         <button class="burger" id="burger" aria-label="Menú" aria-expanded="false"><span></span><span></span></button>
       </div>
     </div>
@@ -70,7 +71,7 @@
         <img class="hero__logo" src="assets/logo.svg" alt="SOMAD surftrips" width="720" height="300">
         <p class="hero__tag" id="hero-tag">Experiencias. Comunidad. Viajes.<br>Surfing y buenos momentos.</p>
         <div class="hero__actions">
-          <a class="btn btn--paper" data-list="">Apuntarme a la lista</a>
+          <a class="btn btn--sun" data-list="">Apuntarme a la lista</a>
           <a class="btn btn--light" href="#viajes">Ver viajes</a>
         </div>
       </div>
@@ -123,6 +124,19 @@
           </div>
         </div>
         <div class="trips" id="trips-past"></div>
+      </div>
+    </section>
+
+    <section class="section section--paper2" id="calendario">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow"><svg class="star"><use href="#star"/></svg> Calendario</p>
+            <h2>Los próximos 12 meses</h2>
+          </div>
+          <p class="cal__legend"><span class="cal__dot cal__dot--trip"></span> viaje con fecha <span class="cal__dot cal__dot--soon"></span> por anunciar</p>
+        </div>
+        <div class="cal" id="calendar"></div>
       </div>
     </section>
 
@@ -250,7 +264,7 @@
         <h2>¿Te vienes al próximo?</h2>
         <p>Apúntate a la lista de espera y te avisamos antes que a nadie. Sin spam, solo olas.</p>
         <div class="hero__actions">
-          <a class="btn btn--paper btn--lg" data-list="">Apuntarme a la lista</a>
+          <a class="btn btn--sun btn--lg" data-list="">Apuntarme a la lista</a>
           <a class="btn btn--light btn--lg" data-wa="Hola SOMAD! 👋">WhatsApp</a>
           <a class="btn btn--light btn--lg" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
         </div>
@@ -327,16 +341,16 @@
       <div class="dlg__foot">
         <a class="link-u form__alt" data-wa="Hola SOMAD! Quiero apuntarme a la lista del próximo viaje 🌊">Prefiero WhatsApp</a>
         <span class="spacer"></span>
-        <button type="submit" class="btn btn--ink" id="list-submit">Apuntarme</button>
+        <button type="submit" class="btn btn--sun" id="list-submit">Apuntarme</button>
       </div>
     </form>
     <div class="form__ok" id="list-ok" hidden>
       <svg class="star form__ok-star"><use href="#star"/></svg>
       <h2 id="ok-title">¡Estás dentro!</h2>
       <p id="ok-text">Te escribimos en cuanto salga el próximo viaje. Mientras tanto, síguenos para ver lo que se cuece.</p>
-      <a class="btn btn--ink" id="ok-pay" href="#" target="_blank" rel="noopener" hidden>Pagar la señal</a>
+      <a class="btn btn--sun" id="ok-pay" href="#" target="_blank" rel="noopener" hidden>Pagar la señal</a>
       <div class="hero__actions">
-        <a class="btn btn--ink" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
+        <a class="btn btn--sun" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
         <a class="btn btn--paper" data-wa="Hola SOMAD! Acabo de apuntarme a la lista 🌊">Escribirnos por WhatsApp</a>
         <button type="button" class="btn btn--paper" data-close>Cerrar</button>
       </div>

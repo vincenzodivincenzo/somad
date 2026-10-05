@@ -90,7 +90,7 @@
           <p class="trip__blurb">${esc(t.blurb)}</p>
           ${featured ? countdown(t) : ""}
           <div class="trip__tags">${(t.tags || []).map((x) => `<span>${esc(x)}</span>`).join("")}</div>
-          <div class="trip__foot"><a class="btn ${isUpcoming(t) ? "btn--ink" : "btn--paper"} btn--sm" ${action}>${esc(label)}</a><span>${price}${price && spots ? "<br>" : ""}${spots}</span></div>
+          <div class="trip__foot"><a class="btn ${isUpcoming(t) ? "btn--sun" : "btn--paper"} btn--sm" ${action}>${esc(label)}</a><span>${price}${price && spots ? "<br>" : ""}${spots}</span></div>
         </div>
       </article>`;
   };
@@ -130,6 +130,65 @@
   const g = document.getElementById("gallery");
   if (g) g.innerHTML = GALLERY.map((p) => `
     <figure><a href="https://www.instagram.com/${esc(CFG.instagram)}/" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.alt || p.caption || "SOMAD")}" loading="lazy"></a>${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("");
+
+  /* ───────── Calendar: next 12 months */
+  const cal = document.getElementById("calendar");
+  if (cal) {
+    const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const DOW = ["L", "M", "X", "J", "V", "S", "D"];
+    const dated = TRIPS.filter((t) => t.status !== "soon" && t.start);
+    const soonTrips = TRIPS.filter((t) => t.status === "soon");
+    const key = (d) => d.toISOString().slice(0, 10);
+    const dayMap = {};
+    dated.forEach((t) => {
+      const a = parse(t.start), b = parse(t.end) || a;
+      for (let d = new Date(a); d <= b; d.setDate(d.getDate() + 1)) {
+        const k = key(d); dayMap[k] = dayMap[k] || { t, first: +d === +a, last: +d === +b };
+      }
+    });
+    // "soon" trips: guess the month from dateLabel (e.g. "Invierno 2026 / 27" → none; "Marzo 2027" → March)
+    const soonMonths = {};
+    soonTrips.forEach((t) => {
+      const m = MONTHS.findIndex((n) => (t.dateLabel || "").toLowerCase().includes(n));
+      const y = ((t.dateLabel || "").match(/20\d\d/) || [])[0];
+      if (m >= 0 && y) soonMonths[`${y}-${m}`] = t;
+    });
+    const months = [];
+    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    for (let i = 0; i < 12; i++) {
+      const m = new Date(start.getFullYear(), start.getMonth() + i, 1);
+      const y = m.getFullYear(), mi = m.getMonth();
+      const first = (m.getDay() + 6) % 7, days = new Date(y, mi + 1, 0).getDate();
+      const cells = [...DOW.map((d) => `<span class="dow">${d}</span>`), ...Array(first).fill("<span></span>")];
+      const tripsHere = new Map();
+      for (let d = 1; d <= days; d++) {
+        const date = new Date(y, mi, d), k = key(date), hit = dayMap[k];
+        const cls = ["day", hit ? "trip" : "", hit && hit.first ? "first" : "", hit && hit.last ? "last" : "", +date === +today ? "today" : "", date < today ? "past" : ""].filter(Boolean).join(" ");
+        cells.push(`<span class="${cls}">${d}</span>`);
+        if (hit) tripsHere.set(hit.t.id, hit.t);
+      }
+      const soon = soonMonths[`${y}-${mi}`];
+      const list = [...tripsHere.values()].map((t) => {
+        const upcoming = isUpcoming(t);
+        const attr = upcoming && t.status !== "soon" && !(t.spots && t.spotsLeft !== undefined && t.spotsLeft <= 0) ? `data-book="${esc(t.id)}"` : `data-list="${esc(t.title + " · " + t.dateLabel)}"`;
+        return `<button class="month__trip" ${attr}>${esc(t.title)} <small>${esc(t.dateLabel)}</small></button>`;
+      }).join("");
+      const isCurrent = i === 0;
+      months.push(`<div class="month sk ${["", "sk--2", "sk--3"][i % 3]} ${soon ? "month--soon" : ""}">
+        ${isCurrent ? `<span class="month__sticker">hoy</span>` : ""}
+        <div class="month__head"><span class="month__name">${MONTHS[mi]}</span><span class="month__year">${y}</span></div>
+        <div class="month__grid">${cells.join("")}</div>
+        ${list ? `<div class="month__trips">${list}</div>` : ""}
+        ${soon ? `<button class="month__soon" data-list="">${esc(soon.title)} · por anunciar</button>` : ""}
+      </div>`);
+    }
+    cal.innerHTML = months.join("");
+    if (!dated.some(isUpcoming) && soonTrips.length && !Object.keys(soonMonths).length) {
+      // nothing dated yet: pin the "soon" trip on the first month as a dashed note
+      const firstMonth = cal.querySelector(".month");
+      if (firstMonth) firstMonth.insertAdjacentHTML("beforeend", `<button class="month__soon" data-list="">${esc(soonTrips[0].title)} · ${esc(soonTrips[0].dateLabel)}</button>`);
+    }
+  }
 
   /* ───────── Waiting list (CRM) */
   const dlg = document.getElementById("list-dlg");
@@ -254,7 +313,7 @@
   function showErr(m) { errBox.textContent = m; errBox.hidden = false; }
 
   /* Reveal on scroll */
-  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure").forEach((el) => el.classList.add("reveal"));
+  document.querySelectorAll(".trip,.dest__card,.step,.value,.faq details,.gallery figure,.month").forEach((el) => el.classList.add("reveal"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
   }, { threshold: 0.1 });

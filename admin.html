@@ -36,7 +36,7 @@
         <input type="password" id="crm-key" placeholder="Pégala aquí" autocomplete="off">
       </label>
       <label class="check"><input type="checkbox" id="remember" checked> Recordar en este dispositivo</label>
-      <button class="btn btn--ink" id="login-btn">Entrar</button>
+      <button class="btn btn--sun" id="login-btn">Entrar</button>
       <p class="login__err" id="login-err"></p>
       <p class="login__help">¿No tienes clave? Pídesela a Vincenzo. No la compartas por redes.</p>
     </div>
@@ -128,7 +128,7 @@
       <section class="pane" id="pane-trips">
         <div class="pane__head">
           <div><h2>Viajes</h2><p>El primero de la lista con fechas futuras sale como “Próximo viaje”. Los que ya pasaron se mueven solos a “Donde ya hemos estado”.</p></div>
-          <button class="btn btn--ink" id="new-trip">+ Nuevo viaje</button>
+          <button class="btn btn--sun" id="new-trip">+ Nuevo viaje</button>
         </div>
         <div class="list" id="trip-list"></div>
       </section>
@@ -137,10 +137,10 @@
       <section class="pane" id="pane-photos">
         <div class="pane__head">
           <div><h2>Fotos</h2><p>Las fotos de la sección “Esto es SOMAD”. Las primeras dos salen más grandes. Se reducen solas antes de subir.</p></div>
-          <label class="btn btn--ink file-btn">+ Añadir fotos<input type="file" id="photo-files" accept="image/*" multiple hidden></label>
+          <label class="btn btn--sun file-btn">+ Añadir fotos<input type="file" id="photo-files" accept="image/*" multiple hidden></label>
         </div>
         <div class="photo-grid" id="photo-grid"></div>
-        <div class="pane__foot"><button class="btn btn--ink" id="save-gallery" disabled>Guardar cambios de fotos</button></div>
+        <div class="pane__foot"><button class="btn btn--sun" id="save-gallery" disabled>Guardar cambios de fotos</button></div>
       </section>
 
       <!-- SETTINGS -->
@@ -157,7 +157,7 @@
           <h3 class="form__sub">Base de datos de la lista de espera (Supabase)</h3>
           <label class="field"><span>URL del proyecto</span><input name="supabaseUrl" placeholder="https://xxxx.supabase.co"></label>
           <label class="field"><span>Anon key (es pública, no pasa nada por ponerla aquí)</span><input name="supabaseAnonKey" placeholder="eyJ…"></label>
-          <div class="pane__foot"><button class="btn btn--ink" type="submit">Guardar</button></div>
+          <div class="pane__foot"><button class="btn btn--sun" type="submit">Guardar</button></div>
         </form>
       </section>
     </main>
@@ -206,7 +206,7 @@
         <button type="button" class="btn btn--paper" id="trip-delete" hidden>Borrar viaje</button>
         <span class="spacer"></span>
         <button type="button" class="btn btn--paper" id="trip-cancel">Cancelar</button>
-        <button type="submit" class="btn btn--ink" id="trip-save">Guardar y publicar</button>
+        <button type="submit" class="btn btn--sun" id="trip-save">Guardar y publicar</button>
       </div>
     </form>
   </dialog>
@@ -225,7 +225,7 @@
         <button type="button" class="btn btn--paper" id="lead-delete">Borrar</button>
         <span class="spacer"></span>
         <button type="button" class="btn btn--paper" id="lead-cancel">Cancelar</button>
-        <button type="submit" class="btn btn--ink">Guardar</button>
+        <button type="submit" class="btn btn--sun">Guardar</button>
       </div>
     </form>
   </dialog>
@@ -244,7 +244,7 @@
         <button type="button" class="btn btn--paper" id="booking-delete">Borrar</button>
         <span class="spacer"></span>
         <button type="button" class="btn btn--paper" id="booking-cancel">Cancelar</button>
-        <button type="submit" class="btn btn--ink">Guardar</button>
+        <button type="submit" class="btn btn--sun">Guardar</button>
       </div>
     </form>
   </dialog>
