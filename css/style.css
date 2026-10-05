@@ -242,7 +242,7 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
 .footer__brand img{height:56px;width:auto;margin-bottom:12px}
 .footer__brand p{color:var(--ink-2)}
 .footer__col{display:flex;flex-direction:column;gap:8px}
-.footer__col h4{font-size:1rem;margin-bottom:6px;display:inline-block;background:linear-gradient(transparent 60%,var(--sun) 60%)}
+.footer__col h4{font-size:1rem;margin-bottom:6px;display:inline-block;align-self:flex-start;padding:0 2px;background:linear-gradient(transparent 62%,var(--sun) 62%)}
 .footer__col a:hover{text-decoration:underline;text-decoration-thickness:2px}
 .footer__bottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:44px;padding-top:18px;border-top:1.5px dashed rgba(18,18,18,.35);font-size:.85rem;color:var(--muted)}
 .footer__bottom a:hover{text-decoration:underline}
