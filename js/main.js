@@ -160,12 +160,12 @@
       return `<div class="strip-row ${items.length >= 4 ? "strip-row--more" : ""}">
         <div class="strip-row__head"><h3 class="strip-row__title"><span class="flag">${FLAG[k] || "🌊"}</span>${esc(k)} <span class="strip-row__count">${items.length} fotos</span></h3>
           <div class="strip-row__nav"><button aria-label="Anterior" data-dir="-1">←</button><button aria-label="Siguiente" data-dir="1">→</button></div></div>
-        <div class="strip" id="strip-${i}">${cards}${items.length >= 4 ? `<figure class="pol" data-href="${igProfile}">Ver más<br>en Instagram →</figure>` : ""}</div>
+        <div class="pstrip" id="strip-${i}">${cards}${items.length >= 4 ? `<figure class="pol" data-href="${igProfile}">Ver más<br>en Instagram →</figure>` : ""}</div>
       </div>`;
     }).join("");
     g.addEventListener("click", (e) => {
       const nav = e.target.closest("[data-dir]");
-      if (nav) { const strip = nav.closest(".strip-row").querySelector(".strip"); strip.scrollBy({ left: Number(nav.dataset.dir) * strip.clientWidth * 0.8, behavior: "smooth" }); return; }
+      if (nav) { const strip = nav.closest(".strip-row").querySelector(".pstrip"); strip.scrollBy({ left: Number(nav.dataset.dir) * strip.clientWidth * 0.8, behavior: "smooth" }); return; }
       const card = e.target.closest(".pol[data-href]");
       if (card) window.open(card.dataset.href, "_blank", "noopener");
     });

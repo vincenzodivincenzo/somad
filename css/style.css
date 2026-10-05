@@ -428,13 +428,13 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
 .strip-row__nav{display:flex;gap:6px}
 .strip-row__nav button{width:38px;height:38px;border:2px solid var(--ink);background:var(--paper);border-radius:50% 46% 52% 48%/48% 52% 46% 54%;cursor:pointer;font-weight:800;color:var(--ink);font-size:1rem}
 .strip-row__nav button:hover{background:var(--sun)}
-.strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 4px 22px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.strip::-webkit-scrollbar{display:none}
-.strip .pol{position:static;flex:0 0 auto;width:min(68vw,260px);scroll-snap-align:start;padding:8px 8px 30px;transform:rotate(var(--r));cursor:pointer}
-.strip .pol:nth-child(5n+1){--r:-2deg}.strip .pol:nth-child(5n+2){--r:1.5deg}.strip .pol:nth-child(5n+3){--r:-1deg}.strip .pol:nth-child(5n+4){--r:2deg}.strip .pol:nth-child(5n+5){--r:-1.5deg}
-.strip .pol img{aspect-ratio:4/5;object-fit:cover}
-.strip .pol:hover{transform:rotate(0) scale(1.03)}
-.strip .pol figcaption{font-size:.85rem;bottom:7px}
-.strip .pol .ig{position:absolute;right:10px;bottom:6px;width:16px;height:16px;opacity:.6}
+.pstrip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 4px 22px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pstrip::-webkit-scrollbar{display:none}
+.pstrip .pol{position:static;flex:0 0 auto;width:min(68vw,260px);scroll-snap-align:start;padding:8px 8px 30px;transform:rotate(var(--r));cursor:pointer}
+.pstrip .pol:nth-child(5n+1){--r:-2deg}.pstrip .pol:nth-child(5n+2){--r:1.5deg}.pstrip .pol:nth-child(5n+3){--r:-1deg}.pstrip .pol:nth-child(5n+4){--r:2deg}.pstrip .pol:nth-child(5n+5){--r:-1.5deg}
+.pstrip .pol img{aspect-ratio:4/5;object-fit:cover}
+.pstrip .pol:hover{transform:rotate(0) scale(1.03)}
+.pstrip .pol figcaption{font-size:.85rem;bottom:7px}
+.pstrip .pol .ig{position:absolute;right:10px;bottom:6px;width:16px;height:16px;opacity:.6}
 .strip-row--more .pol:last-child{display:grid;place-items:center;background:var(--sun);border:2px solid var(--ink);padding:0;aspect-ratio:4/5;font-family:var(--display);font-weight:800;text-align:center;font-size:1.05rem;line-height:1.2}
 @media (max-width:760px){.strip-row__nav{display:none}}
