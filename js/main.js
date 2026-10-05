@@ -274,7 +274,7 @@
     setMode("list");
     form.hidden = false; okBox.hidden = true; errBox.hidden = true;
     if (interest && interestSel && [...interestSel.options].some((o) => o.value === interest)) interestSel.value = interest;
-    dlg.showModal();
+    dlg.showModal(); lock(); dlg.scrollTop = 0;
     setTimeout(() => form.name.focus(), 50);
   };
   const openBook = (tripId) => {
@@ -282,9 +282,11 @@
     if (!trip) return openList();
     setMode("book", trip);
     form.hidden = false; okBox.hidden = true; errBox.hidden = true;
-    dlg.showModal();
+    dlg.showModal(); lock(); dlg.scrollTop = 0;
     setTimeout(() => form.name.focus(), 50);
   };
+  if (dlg) { dlg.addEventListener("close", () => document.body.classList.remove("dlg-open")); }
+  const lock = () => document.body.classList.add("dlg-open");
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-book]");
     if (b) { e.preventDefault(); openBook(b.dataset.book); return; }
