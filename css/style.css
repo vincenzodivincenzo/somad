@@ -430,7 +430,7 @@ h3{font-size:clamp(1.2rem,2vw,1.55rem)}
 .strip-row__nav button:hover{background:var(--sun)}
 .pstrip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 4px 22px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .pstrip::-webkit-scrollbar{display:none}
-.pstrip .pol{position:static;flex:0 0 auto;width:min(68vw,260px);scroll-snap-align:start;padding:8px 8px 30px;transform:rotate(var(--r));cursor:pointer}
+.pstrip .pol{position:static;flex:0 0 auto;margin:0;width:min(68vw,260px);scroll-snap-align:start;padding:8px 8px 30px;transform:rotate(var(--r));cursor:pointer}
 .pstrip .pol:nth-child(5n+1){--r:-2deg}.pstrip .pol:nth-child(5n+2){--r:1.5deg}.pstrip .pol:nth-child(5n+3){--r:-1deg}.pstrip .pol:nth-child(5n+4){--r:2deg}.pstrip .pol:nth-child(5n+5){--r:-1.5deg}
 .pstrip .pol img{aspect-ratio:4/5;object-fit:cover}
 .pstrip .pol:hover{transform:rotate(0) scale(1.03)}
