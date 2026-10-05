@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOMAD · Surf trips, comunidad y buenos momentos</title>
+  <meta name="description" content="SOMAD organiza viajes de surf en grupo por España, Portugal y Canarias. Experiencias, comunidad y buenos momentos. Todos los niveles.">
+  <meta property="og:title" content="SOMAD · Surf trips">
+  <meta property="og:description" content="Experiencias. Comunidad. Viajes. Surfing y buenos momentos.">
+  <meta property="og:image" content="assets/img/crew-boards.jpg">
+  <meta name="theme-color" content="#FBF5EA">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top strip -->
+  <div class="strip" id="strip">
+    <div class="strip__inner">
+      <span class="strip__pill">🔜 Próximo viaje</span>
+      <span class="strip__text" id="strip-text">Nuevo destino en camino · apúntate a la lista</span>
+      <a class="strip__link" data-wa="Hola SOMAD! Quiero apuntarme a la lista del próximo viaje 🌊">Avísame →</a>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#top" class="logo" aria-label="SOMAD inicio">
+        <svg class="logo__svg" viewBox="0 0 300 56" role="img" aria-label="SOMAD">
+          <text x="0" y="46" class="logo__text">S</text>
+          <g transform="translate(66 28)" class="logo__sun">
+            <circle r="13"/>
+            <g class="logo__rays">
+              <line x1="0" y1="-20" x2="0" y2="-26"/><line x1="0" y1="20" x2="0" y2="26"/>
+              <line x1="-20" y1="0" x2="-26" y2="0"/><line x1="20" y1="0" x2="26" y2="0"/>
+              <line x1="-14" y1="-14" x2="-18.5" y2="-18.5"/><line x1="14" y1="14" x2="18.5" y2="18.5"/>
+              <line x1="-14" y1="14" x2="-18.5" y2="18.5"/><line x1="14" y1="-14" x2="18.5" y2="-18.5"/>
+            </g>
+          </g>
+          <text x="98" y="46" class="logo__text">MAD</text>
+        </svg>
+      </a>
+      <nav class="nav__links" id="nav-links">
+        <a href="#viajes">Viajes</a>
+        <a href="#destinos">Destinos</a>
+        <a href="#como">Cómo funciona</a>
+        <a href="#comunidad">Comunidad</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn btn--primary btn--sm nav__cta-mobile" data-wa="Hola SOMAD! Quiero info del próximo viaje 🏄">WhatsApp</a>
+      </nav>
+      <div class="nav__right">
+        <a class="nav__ig" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a class="btn btn--primary btn--sm nav__cta" data-wa="Hola SOMAD! Quiero info del próximo viaje 🏄">Escríbenos</a>
+        <button class="burger" id="burger" aria-label="Menú" aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">Surf trips desde España 🇪🇸</p>
+          <h1 class="hero__title">
+            <span>Surf,</span>
+            <span>buena gente</span>
+            <span>y <em>buenos</em></span>
+            <span><em>momentos.</em></span>
+          </h1>
+          <p class="hero__sub">Viajes de surf en grupo a los mejores spots de España, Portugal y Canarias. Vienes solo, vuelves con una familia.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#viajes">Ver viajes</a>
+            <a class="btn btn--ghost" data-wa="Hola SOMAD! Quiero info sobre los viajes 🌊">Pregúntanos por WhatsApp</a>
+          </div>
+          <ul class="chips">
+            <li>Todos los niveles</li>
+            <li>Grupos pequeños</li>
+            <li>4 destinos</li>
+            <li id="chip-followers">1.8k en la comunidad</li>
+          </ul>
+        </div>
+        <div class="hero__collage" aria-hidden="true">
+          <figure class="collage__a"><img src="assets/img/crew-boards.jpg" alt=""></figure>
+          <figure class="collage__b"><img src="assets/img/asturias-duo.jpg" alt=""></figure>
+          <figure class="collage__c"><img src="assets/img/beach-smile.jpg" alt=""></figure>
+          <div class="collage__sticker">
+            <svg viewBox="0 0 100 100"><defs><path id="circ" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0"/></defs><text><textPath href="#circ">EXPERIENCIAS · COMUNIDAD · VIAJES · </textPath></text></svg>
+            <span class="collage__sun">☀️</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Asturias 🇪🇸</span><span>Ericeira 🇵🇹</span><span>Lanzarote 🇮🇨</span><span>Fuerteventura 🇮🇨</span><span>Surfing y buenos momentos 🌺</span>
+        <span>Asturias 🇪🇸</span><span>Ericeira 🇵🇹</span><span>Lanzarote 🇮🇨</span><span>Fuerteventura 🇮🇨</span><span>Surfing y buenos momentos 🌺</span>
+      </div>
+    </div>
+
+    <!-- Viajes -->
+    <section class="section" id="viajes">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">🏄 Viajes</p>
+            <h2>Próximo viaje</h2>
+          </div>
+          <a class="link-arrow" href="#pasados">Ver viajes pasados →</a>
+        </div>
+        <div class="trips trips--featured" id="trips-upcoming"></div>
+
+        <div class="section__head section__head--sub" id="pasados">
+          <h3>Donde ya hemos estado</h3>
+          <div class="filters" id="filters">
+            <button class="filter is-active" data-filter="all">Todos</button>
+            <button class="filter" data-filter="España">España</button>
+            <button class="filter" data-filter="Portugal">Portugal</button>
+            <button class="filter" data-filter="Islas Canarias">Canarias</button>
+          </div>
+        </div>
+        <div class="trips" id="trips-past"></div>
+      </div>
+    </section>
+
+    <!-- Destinos -->
+    <section class="section section--ink" id="destinos">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">🗺️ Destinos</p>
+            <h2>Elige tu ola</h2>
+          </div>
+        </div>
+        <div class="dest">
+          <article class="dest__card">
+            <img src="assets/img/asturias-duo.jpg" alt="Dos surfistas celebrando una ola en Asturias">
+            <div class="dest__body">
+              <span class="tag">🇪🇸 España</span>
+              <h3>Asturias</h3>
+              <p>Cantábrico puro: playas verdes, olas constantes y sidra después del baño. Perfecto para una escapada de fin de semana.</p>
+              <ul class="dest__meta"><li>Fin de semana</li><li>Sep – Oct</li><li>Iniciación y medio</li></ul>
+            </div>
+          </article>
+          <article class="dest__card">
+            <img src="assets/img/ericeira-boards.jpg" alt="Grupo entrando al agua con tablas en Ericeira">
+            <div class="dest__body">
+              <span class="tag">🇵🇹 Portugal</span>
+              <h3>Ericeira</h3>
+              <p>La única Reserva Mundial de Surf de Europa. Olas para todos, pueblo blanco con alma y atardeceres de postal.</p>
+              <ul class="dest__meta"><li>Semana</li><li>Jun – Sep</li><li>Todos los niveles</li></ul>
+            </div>
+          </article>
+          <article class="dest__card">
+            <img src="assets/img/surf-lesson.jpg" alt="Clase de surf en una playa de Canarias">
+            <div class="dest__body">
+              <span class="tag">🇮🇨 Canarias</span>
+              <h3>Lanzarote</h3>
+              <p>Famara: 6 km de arena bajo el risco, volcán al fondo y 22 grados en marzo. El invierno aquí no existe.</p>
+              <ul class="dest__meta"><li>Semana</li><li>Oct – Abr</li><li>Todos los niveles</li></ul>
+            </div>
+          </article>
+          <article class="dest__card">
+            <img src="assets/img/beach-smile.jpg" alt="Surfista sonriendo en la arena durante una clase">
+            <div class="dest__body">
+              <span class="tag">🇮🇨 Canarias</span>
+              <h3>Fuerteventura</h3>
+              <p>La isla salvaje. Dunas, viento, picos para todos los gustos y una costa norte que no se olvida.</p>
+              <ul class="dest__meta"><li>Semana</li><li>Oct – Abr</li><li>Medio y avanzado</li></ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section class="section" id="como">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">⚡ Cómo funciona</p>
+            <h2>Tú solo trae las ganas</h2>
+          </div>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="step__num">01</span>
+            <h3>Escríbenos</h3>
+            <p>Un WhatsApp y te contamos fechas, precio y qué incluye el próximo viaje. Sin compromiso.</p>
+          </li>
+          <li class="step">
+            <span class="step__num">02</span>
+            <h3>Reserva tu plaza</h3>
+            <p>Grupos pequeños, plazas limitadas. Reservas con una señal y el resto antes de salir.</p>
+          </li>
+          <li class="step">
+            <span class="step__num">03</span>
+            <h3>Vuela y surfea</h3>
+            <p>Te ayudamos con los vuelos y nos vemos en destino. Del resto nos ocupamos nosotros.</p>
+          </li>
+          <li class="step">
+            <span class="step__num">04</span>
+            <h3>Vuelve con familia</h3>
+            <p>Lo que pasa en SOMAD se queda en el grupo de WhatsApp. Para siempre.</p>
+          </li>
+        </ol>
+
+        <div class="includes">
+          <div class="includes__copy">
+            <h3>Qué suele incluir un viaje SOMAD</h3>
+            <p>Cada destino es distinto, pero la receta es la misma. Consulta el detalle de cada viaje por WhatsApp.</p>
+          </div>
+          <ul class="includes__list">
+            <li><b>Alojamiento</b> en surf house o apartamentos en grupo</li>
+            <li><b>Clases de surf</b> con escuela local y monitores titulados</li>
+            <li><b>Material</b> incluido: tabla, neopreno y licra</li>
+            <li><b>Planes</b> fuera del agua: atardeceres, cenas, yoga, skate</li>
+            <li><b>Fotos y vídeos</b> del grupo para presumir después</li>
+            <li><b>Comunidad</b>: gente nueva con las mismas ganas que tú</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comunidad / IG -->
+    <section class="section section--sun" id="comunidad">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">🌺 Comunidad</p>
+            <h2>Esto es SOMAD</h2>
+          </div>
+          <a class="link-arrow" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">@somad.surftrips →</a>
+        </div>
+        <div class="gallery">
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/crew-boards.jpg" alt="Grupo SOMAD con tablas en la playa"></a>
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/surf-lesson.jpg" alt="Clase de surf en el agua"></a>
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/ericeira-walk.jpg" alt="Caminando hacia la playa en Ericeira"></a>
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/beach-smile.jpg" alt="Sonrisas en la arena"></a>
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/summer-2.jpg" alt="Dos surfistas entrando al agua"></a>
+          <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener"><img src="assets/img/asturias-duo.jpg" alt="Celebrando una ola"></a>
+        </div>
+        <div class="values">
+          <div class="value"><span class="value__emoji">🌊</span><h3>Experiencias</h3><p>No vendemos paquetes. Montamos viajes que nos gustaría hacer a nosotros.</p></div>
+          <div class="value"><span class="value__emoji">🤝</span><h3>Comunidad</h3><p>Más de la mitad del grupo repite. Vienes por el surf, vuelves por la gente.</p></div>
+          <div class="value"><span class="value__emoji">☀️</span><h3>Viajes</h3><p>Spots con olas de verdad, alojamiento con alma y cero postureo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <div>
+            <p class="eyebrow">❓ Preguntas</p>
+            <h2>Lo que todo el mundo pregunta</h2>
+          </div>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>¿Hace falta saber surfear?</summary>
+            <p>No. La mayoría viene sin haber tocado una tabla. Las clases se dividen por nivel, así que tanto si es tu primera vez como si ya coges olas verdes, vas a progresar.</p>
+          </details>
+          <details>
+            <summary>¿Puedo venir solo/a?</summary>
+            <p>Sí, y de hecho es lo más habitual. Los grupos son pequeños y en el primer baño ya tienes crew.</p>
+          </details>
+          <details>
+            <summary>¿Qué edad tiene la gente?</summary>
+            <p>Normalmente entre 23 y 40 años, con muchas ganas de surf y de pasarlo bien. Lo importante es la actitud.</p>
+          </details>
+          <details>
+            <summary>¿Qué tengo que llevar?</summary>
+            <p>Bañador, crema solar, ropa cómoda y ganas. El neopreno, la tabla y la licra los ponemos nosotros. Te mandamos una lista completa antes del viaje.</p>
+          </details>
+          <details>
+            <summary>¿Están incluidos los vuelos?</summary>
+            <p>No, cada uno reserva su vuelo para tener flexibilidad. Te decimos qué vuelos coge el grupo para que podáis ir juntos.</p>
+          </details>
+          <details>
+            <summary>¿Cómo reservo?</summary>
+            <p>Escríbenos por WhatsApp o Instagram. Te mandamos toda la info y, si te cuadra, reservas tu plaza con una señal.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="cta">
+      <div class="container cta__inner">
+        <h2>¿Te vienes al próximo?</h2>
+        <p>Cuéntanos tu nivel y cuándo te viene bien. Te respondemos rápido.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" data-wa="Hola SOMAD! Quiero venirme al próximo viaje 🏄‍♀️">Escríbenos por WhatsApp</a>
+          <a class="btn btn--ghost btn--lg btn--light" href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Síguenos en Instagram</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <p class="footer__logo">S☀MAD</p>
+        <p>Experiencias. Comunidad. Viajes.<br>Surfing y buenos momentos.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Viajes</h4>
+        <a href="#viajes">Próximo viaje</a>
+        <a href="#pasados">Viajes pasados</a>
+        <a href="#destinos">Destinos</a>
+      </div>
+      <div class="footer__col">
+        <h4>SOMAD</h4>
+        <a href="#como">Cómo funciona</a>
+        <a href="#comunidad">Comunidad</a>
+        <a href="#faq">Preguntas</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a data-wa="Hola SOMAD! 👋">WhatsApp</a>
+        <a href="https://www.instagram.com/somad.surftrips/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <span>© <span id="year"></span> SOMAD Surf Trips</span>
+      <span>Hecho con ☀️ y agua salada</span>
+    </div>
+  </footer>
+
+  <a class="wa-float" data-wa="Hola SOMAD! 👋" aria-label="WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M16 3C9 3 3.3 8.7 3.3 15.7c0 2.5.7 4.9 2 7L3 29l6.5-2.1c2 1.1 4.2 1.7 6.5 1.7 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.2c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.3-3.7-.3-.4a10.3 10.3 0 1 1 9 5zm5.7-7.6c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.4 8.4 0 0 1-4.2-3.7c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.1 1.1-1.1 2.7 1.1 3.1 1.3 3.3c.2.2 2.2 3.4 5.4 4.8 2 .9 2.8.9 3.8.8.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5l-.7-.3z"/></svg>
+  </a>
+
+  <script src="data/trips.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
